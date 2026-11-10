@@ -1,0 +1,24 @@
+services:
+  pia:
+    build: .
+    container_name: pia_aila_app
+    restart: unless-stopped
+    networks:
+      - proxy-network
+    volumes:
+      - ./.streamlit/secrets.toml:/app/.streamlit/secrets.toml:ro
+      - ./data:/app/data
+    environment:
+      - OLLAMA_BASE_URL=http://host-gateway:11434/v1
+    extra_hosts:
+      - "host-gateway:host-gateway"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pia.rule=Host(`pia.codislab.hcc.tugraz.at`)"
+      - "traefik.http.routers.pia.entrypoints=websecure"
+      - "traefik.http.routers.pia.tls.certresolver=myresolver"
+      - "traefik.http.services.pia.loadbalancer.server.port=8501"
+
+networks:
+  proxy-network:
+    external: true
