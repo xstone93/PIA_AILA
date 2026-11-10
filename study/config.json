@@ -1,0 +1,16 @@
+{
+  "version": "1",
+  "welcome": "welcome.md",
+  "completion": "completion.md",
+  "groups": {
+    "A": ["pia_robot_and_batteries", "aila_cables_and_tester"],
+    "B": ["pia_cables_and_tester", "aila_robot_and_batteries"]
+  },
+  "pre_study": {"markdown": "questionnaire.md", "survey_url": "https://example.org"},
+  "post_activity": {
+    "pia_robot_and_batteries": {"markdown": "questionnaire.md", "survey_url": "https://example.org"},
+    "aila_robot_and_batteries": {"markdown": "questionnaire.md", "survey_url": "https://example.org"},
+    "pia_cables_and_tester": {"markdown": "questionnaire.md", "survey_url": "https://example.org"},
+    "aila_cables_and_tester": {"markdown": "questionnaire.md", "survey_url": "https://example.org"}
+  }
+}

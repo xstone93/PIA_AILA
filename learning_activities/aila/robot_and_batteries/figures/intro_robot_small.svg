@@ -1,0 +1,98 @@
+<svg width="450" height="928" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-labelledby="title desc" role="img">
+  <title id="title">Roboter und hierarchische Energienetzwerke</title>
+  <desc id="desc">Drei Diagramme: ein Roboter mit zwei Akkus, ein Roboter mit drei Akkus und ein binärer Baum mit acht Akkus.</desc>
+  <defs>
+    <g id="battery">
+      <rect id="svg_1" stroke-width="4" stroke="#202020" fill="#86df5a" rx="4" height="12" width="26" y="-38" x="-13"/>
+      <rect id="svg_2" stroke-width="4" stroke="#202020" fill="url(#batteryFill)" rx="9" height="80" width="56" y="-29" x="-28"/>
+      <path id="svg_3" stroke-width="4" stroke="#202020" fill="none" d="m-28,14l56,0"/>
+    </g>
+    <g stroke-linejoin="round" stroke-linecap="round" stroke-width="4" stroke="#171717" id="robot">
+      <!-- antenna and head -->
+      <path id="svg_4" fill="none" d="m0,-107l0,-19"/>
+      <circle id="svg_5" fill="#aaa" r="7" cy="-133" cx="0"/>
+      <rect id="svg_6" fill="url(#metal)" rx="13" height="84" width="116" y="-105" x="-58"/>
+      <rect id="svg_7" fill="#aaa" rx="4" height="29" width="15" y="-78" x="-73"/>
+      <rect id="svg_8" fill="#aaa" rx="4" height="29" width="15" y="-78" x="58"/>
+      <circle id="svg_9" fill="#fff" r="11" cy="-66" cx="-25"/>
+      <circle id="svg_10" fill="#fff" r="11" cy="-66" cx="25"/>
+      <circle id="svg_11" fill="#111" r="4" cy="-66" cx="-25"/>
+      <circle id="svg_12" fill="#111" r="4" cy="-66" cx="25"/>
+      <path id="svg_13" fill="none" d="m-21,-43q21,16 43,0"/>
+      <!-- neck and body -->
+      <path id="svg_14" fill="none" d="m-14,-21l0,10m28,-10l0,10"/>
+      <rect id="svg_15" fill="url(#metal)" rx="14" height="95" width="114" y="-11" x="-57"/>
+      <rect id="svg_16" fill="#a6a6a6" rx="4" height="39" width="58" y="12" x="-29"/>
+      <!-- arms -->
+      <circle id="svg_17" fill="#929292" r="11" cy="4" cx="-67"/>
+      <circle id="svg_18" fill="#929292" r="11" cy="4" cx="67"/>
+      <!-- upper and lower arms stay completely outside the torso -->
+      <path id="svg_19" stroke-width="10" stroke="#555" fill="none" d="m-75,11l-17,17l-14,28m181,-45l17,17l14,28"/>
+      <circle id="svg_20" fill="#929292" r="10" cy="28" cx="-92"/>
+      <circle id="svg_21" fill="#929292" r="10" cy="28" cx="92"/>
+      <!-- separate mirrored grippers; absolute coordinates avoid overlap -->
+      <path id="svg_22" stroke-width="8" fill="none" d="m-106,56l0,6m0,0c-15,0 -18,18 -9,25m9,-25c15,0 18,18 9,25m203,-31l0,6m0,0c-15,0 -18,18 -9,25m9,-25c15,0 18,18 9,25"/>
+      <!-- legs -->
+      <rect id="svg_23" fill="#999" rx="3" height="17" width="20" y="84" x="-39"/>
+      <rect id="svg_24" fill="#999" rx="3" height="17" width="20" y="84" x="19"/>
+      <path id="svg_25" stroke-width="11" stroke="#555" fill="none" d="m-29,101l0,36m58,-36l0,36"/>
+      <circle id="svg_26" fill="#999" r="10" cy="117" cx="-29"/>
+      <circle id="svg_27" fill="#999" r="10" cy="117" cx="29"/>
+      <path id="svg_28" fill="#aaa" d="m-29,137l-13,0l-8,13l42,0l0,-13l-21,0zm58,0l-13,0l-8,13l42,0l-8,-13l-13,0z"/>
+    </g>
+    <linearGradient y2="1" x2="0" y1="0" x1="0" id="metal">
+      <stop stop-color="#eeeeee" offset="0"/>
+      <stop stop-color="#c8c8c8" offset="1"/>
+    </linearGradient>
+    <linearGradient y2="1" x2="0" y1="0" x1="0" id="batteryFill">
+      <stop stop-color="#61df68" offset="0"/>
+      <stop stop-color="#3fc653" offset="1"/>
+    </linearGradient>
+  </defs>
+  <!-- panel 1 -->
+  <!-- panel 2 -->
+  <!-- panel 3 -->
+  <g>
+    <title>Layer 1</title>
+    <path stroke="#555" id="svg_32" stroke-linejoin="round" stroke-linecap="round" stroke-width="4" fill="none" d="m209,386l0,216.09338m0,0l-139,214.21431m139,-214.21431l139,214.21431" class="link"/>
+    <circle id="svg_33" stroke-width="4" stroke="#333" fill="#ff9416" r="17" cy="386" cx="209" class="node"/>
+    <circle id="svg_34" stroke-width="4" stroke="#333" fill="#ff9416" r="17" cy="616" cx="209" class="node"/>
+    <g stroke="null" id="svg_37" transform="translate(348 865) scale(0.9 0.9)">
+      <use transform="matrix(0.725275 0 0 0.809853 -1.88786 -3.32513)" stroke="null" x="3.7814" y="-17.48078" id="svg_38" xlink:href="#battery"/>
+    </g>
+    <g id="svg_40" transform="translate(758 316) scale(0.96 0.96)">
+    </g>
+    <g stroke="#555" id="svg_54" stroke-linejoin="round" stroke-linecap="round" stroke-width="4" fill="none" class="link-thin">
+    </g>
+    <g id="svg_57" stroke-width="4" stroke="#333" fill="#ff9416" class="node">
+    </g>
+    <g id="svg_82">
+    </g>
+    <g id="svg_84" transform="translate(758 316) scale(0.96 0.96)">
+      <use x="-573.71799" y="-118.76754" id="svg_83" xlink:href="#robot"/>
+    </g>
+    <g stroke="null" id="svg_86" transform="translate(348 865) scale(0.9 0.9)">
+    </g>
+    <g stroke="null" id="svg_88" transform="translate(348 865) scale(0.9 0.9)">
+      <use transform="matrix(0.725275 0 0 0.809853 -338.64 -1.61573)" stroke="null" x="34.42113" y="-19.59154" id="svg_87" xlink:href="#battery"/>
+    </g>
+    <g stroke="null" id="svg_90" transform="translate(348 865) scale(0.9 0.9)">
+    </g>
+    <g stroke="null" id="svg_92" transform="translate(348 865) scale(0.9 0.9)">
+    </g>
+    <g stroke="null" id="svg_96" transform="translate(348 865) scale(0.9 0.9)">
+    </g>
+    <g stroke="null" id="svg_98" transform="translate(348 865) scale(0.9 0.9)">
+    </g>
+    <g stroke="null" id="svg_100" transform="translate(348 865) scale(0.9 0.9)">
+    </g>
+    <g stroke="null" id="svg_104" transform="translate(348 865) scale(0.9 0.9)">
+    </g>
+    <g stroke="null" id="svg_106" transform="translate(348 865) scale(0.9 0.9)">
+    </g>
+    <g stroke="null" id="svg_108" transform="translate(348 865) scale(0.9 0.9)">
+    </g>
+    <g stroke="null" id="svg_110" transform="translate(348 865) scale(0.9 0.9)">
+    </g>
+  </g>
+</svg>

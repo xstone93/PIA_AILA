@@ -1,0 +1,10 @@
+{
+    "activity_id":  "aila_cables_and_tester",
+    "status":  "draft",
+    "activity_name":  "Kabel und Tester",
+    "role":  "AILA",
+    "intro_sequence":  "intro.md",
+    "tasks":  [
+
+              ]
+}

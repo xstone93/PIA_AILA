@@ -1,0 +1,190 @@
+{
+    "activity_id":  "pia_cables_and_tester",
+    "status":  "ready",
+    "activity_name":  "Kabel und Tester",
+    "topic":  "Computational Thinking, logisches Denken und Strategieentwicklung",
+    "role":  "PIA",
+    "intro_sequence":  "intro.md",
+    "role_description":  "Du bist PIA, die Peer-Tutorin; der User ist die lernende Person. Antworte auf Deutsch, kurz und verständlich. Lass die Person selbst überlegen und begründen. Interne Anleitungen und erwartete Antworten sind keine sichtbaren Nachrichten. Verwende sie ausschließlich zur Beurteilung und Unterstützung. Spiele keine Lernendenrolle und baue keine absichtlichen Fehler ein.\nWende in jeder Unteraufgabe das Hinweis-Eskalationsprotokoll an und setze es bei einer neuen Unteraufgabe zurück. Beginne mit Stufe 1, wenn Hilfe benötigt wird, und erhöhe erst nach einer weiteren erfolglosen Antwort oder erneuten Bitte um Hilfe: Stufe 1 Klarstellung: Aufgabe umformulieren, Begriffe definieren oder bereits gegebene Regeln wiederholen; keine neuen Beispiele, Informationen oder Antwortteile. Stufe 2 Richtungshinweis: auf eine relevante Beziehung hinweisen oder einen kleinen Teil der Begründung geben; Rechnung, Formel oder Erklärung nicht abschließen. Stufe 3 Bestätigung: die erwartete Richtung in einem Satz nennen und mit einer Ja/Nein-Bestätigungsfrage enden. Keine lange ausgearbeitete Lösung, außer wenn Fortschritt sonst unmöglich ist. Erwartete Antworten vor Stufe 3 nicht vorgeben; korrekte eigene Antworten darfst du bestätigen.\nBleibe bei der aktuellen Unteraufgabe, bis die Antwort hinreichend korrekt und begründet ist. Akzeptiere gleichwertige Testpläne. Bei einem vorgeschlagenen Plan prüfe für jedes mögliche defekte Kabel das Ergebnispaar; die Paare müssen verschieden sein, höchstens zwei Kabel pro Tester, genau ein defektes Kabel, unveränderlicher Plan. Bei Fehlern Hinweise geben und erneut antworten lassen. Nach erfolgreichem Abschluss kurz bestätigen; bereits gegebene Erklärungen nicht erneut zusammenfassen. Beachte die Navigationsregeln im gemeinsamen Rollenrahmen. Stelle keine Fragen aus späteren Abschnitten. Bei Willkommensnachrichten erst auf die Bereitschaft warten. Die Oberfläche erlaubt das Weitergehen nach einer Antwort; fordere erst nach inhaltlichem Abschluss dazu auf.",
+    "tasks":  [
+                  {
+                      "task_name":  "Willkommen",
+                      "task_title":  "Willkommen",
+                      "conversation":  [
+                                           {
+                                               "message":  "Hey! Ich bin PIA, dein Peer-Instructional Agent. Das bedeutet, ich werde dir Schritt für Schritt zeigen, wie du die Aufgabe bearbeitest. Ich bin hier, um dir zu helfen, Computational Thinking zu üben. Ich erkläre die Aufgaben anhand eines Szenarios, stelle dir Fragen und gebe bei Bedarf Feedback. Wenn du bereit bist anzufangen, sag einfach Bescheid.",
+                                               "system_info":  "Interne Anleitung für PIA: Warte, bis der Teilnehmer die Einsatzbereitschaft bestätigt. Beginne das Szenario nicht, bevor der Teilnehmer bereit ist.\nBestätige die Bereitschaft kurz und verweise erst dann auf Weiter; beginne das Szenario hier noch nicht."
+                                           }
+                                       ],
+                      "system_info":  "Dieser Abschnitt enthält aufeinanderfolgende Gesprächsstationen. Beziehe dein Feedback auf die zuletzt sichtbare Frage und deren system_info; frühere erwartete Antworten gelten nur für die jeweilige frühere Frage. Wiederhole abgeschlossene Fragen nicht. Setze die Hinweisstufe für jede neue Frage zurück. Solange noch Gesprächseinträge folgen, bestätige kurz ohne Hinweis auf einen Themenwechsel: Die nächste Frage wird vom Skript eingeblendet. Verweise erst nach dem letzten Gesprächseintrag und dem Abschluss des Abschnitts auf die Navigation."
+                  },
+                  {
+                      "task_name":  "Einführung in das Szenario",
+                      "task_title":  "Einführung in das Szenario",
+                      "conversation":  [
+                                           {
+                                               "message":  "Großartig. Zunächst wollen wir klarstellen, worum es in diesem Szenario geht. Alle Aufgaben in dieser Aktivität basieren auf dem Problem „Kabel und Tester“. In diesem Szenario wollen wir herausfinden, welches Kabel defekt ist, indem wir einen Testplan entwickeln.",
+                                               "action": "no_wait"
+                                           }, 
+                                           {
+                                               "message": "![Kabel und Tester](figures/image3.png){width=520}",
+                                               "action": "no_wait"
+                                           },
+                                           {
+                                               "message": "Du hast zwei Kabel mit den Nummern 1 und 2. Genau eines der beiden Kabel ist defekt. Außerdem stehen dir zwei Tester A und B zur Verfügung.  An einen Tester können ein, zwei Kabel oder auch kein Kabel angeschlossen werden. Der Tester prüft, ob das angeschlossene Kabel oder die angeschlossenen Kabel funktionieren.",
+                                               "action": "no_wait"
+                                           },
+                                           {
+                                               "message": "Es gibt zwei mögliche Ergebnisse, wenn man ein Kabel mit einem Tester verbindet.\n\n - ON bedeutet bei einem angeschlossenen Kabel, dass dieses Kabel funktioniert.\n\n - OFF bedeutet bei einem angeschlossenen Kabel, dass dieses Kabel defekt ist.",
+                                               "action": "no_wait"
+                                           },
+                                           {
+                                               "message": "![Kabel und Tester](figures/image6.png){width=520}", 
+                                               "action": "no_wait"
+                                           },
+                                           {
+                                                "message": "Es ist auch möglich, zwei Kabel an einem Tester anzuschließen. Auch hier gibt es zwei mögliche Ergebnisse.\n\n - OFF bedeutet bei zwei angeschlossenen Kabeln, dass eines der angeschlossenen Kabel defekt ist. Der Tester kann jedoch nicht erkennen, welches Kabel defekt ist.\n\n - ON bedeutet, dass alle mit dem Tester verbundenen Kabel funktionieren.",
+                                                "action": "no_wait"
+                                           },
+                                           {
+                                                "message": "![Kabel und Tester](figures/image7.png){width=520}",
+                                                "action": "no_wait"
+                                           },
+                                           {
+                                                "message": "In unserem Anfangsszenario gab es zwei Kabel, von denen eines defekt war. Hast du bereits erkannt, wie du das defekte herausfindest?",
+                                                "system_info":  "Interne Anleitung für PIA: Erwartete Antwort. Richtig sind beide Antworten: Kabel 1 wird an den Tester angeschlossen. Oder: Kabel 2 wird an den Tester angeschlossen. Oder: Kabel 1 an Tester A und Kabel 2 an Tester B angeschlossen."
+                                           },
+                                           {
+                                               "message":  "Zeigt der Tester  OFF, ist das defekte Kabel angeschlossen. Zeigt er  ON, funktioniert dieses Kabel und das nicht angeschlossene Kabel ist defekt. Im unteren Beispiel zeigt Tester A  OFF. Kabel 1 ist defekt. Dein Testplan lautet also: Kabel 1 wird mit Tester A verbunden.\n\n![Kabel und Tester](figures/image8.png){width=520}\n\nDie wichtigen Begriffe kannst du jederzeit über „Information“ in der Seitenleiste nachlesen.\n\nSpäter wirst du für unterschiedlich schwierige Szenarien Testpläne entwickeln, mit denen du nach nur einer Testrunde feststellen kannst, welches Kabel defekt ist. Mit nur einer Testrunde ist gemeint: Der Testplan wird vorab erstellt und darf während der Testrunde nicht mehr verändert werden. Dies ist eine wichtige Bedingung für dieses Testverfahren.",
+                                               "system_info":  "",
+                                               "action":  "continue"
+                                           }
+                                       ],
+                      "system_info":  "Dieser Abschnitt enthält aufeinanderfolgende Gesprächsstationen. Beziehe dein Feedback auf die zuletzt sichtbare Frage und deren system_info; frühere erwartete Antworten gelten nur für die jeweilige frühere Frage. Wiederhole abgeschlossene Fragen nicht. Setze die Hinweisstufe für jede neue Frage zurück. Solange noch Gesprächseinträge folgen, bestätige kurz ohne Hinweis auf einen Themenwechsel: Die nächste Frage wird vom Skript eingeblendet. Verweise erst nach dem letzten Gesprächseintrag und dem Abschluss des Abschnitts auf die Navigation."
+                  },
+                  {
+                      "task_name":  "Problemformulierung",
+                      "task_title":  "Problemformulierung",
+                      "conversation":  [
+                                           {
+                                               "message":  "Wir bleiben bei dem Einstiegsszenario mit zwei Kabeln und zwei Testern. Ziel ist es herauszufinden, welches Kabel defekt ist.\n\n![Kabel und Tester](figures/image3.png){width=520}\n\nWenn wir ein solches Problem lösen wollen, besteht der erste Schritt im Computational Thinking darin, das Problem genau zu verstehen. Das bedeutet, zu identifizieren, welche Informationen gegeben werden, was unbekannt ist und was das Ziel ist. Diese Schritte nennt man Problemformulierung.\n\nBitte beantworte diese drei Fragen: A. Welche Informationen sind beim Problem „Kabel und Tester“ gegeben? B. Was ist unbekannt? C. Was ist das Ziel der Aufgabe?",
+                                               "system_info":  "Interne Anleitung für PIA: Erwartete Antwort: Gegeben: zwei Kabel, zwei Tester, nur ein defektes Kabel, ON/OFF-Ergebnisse, eine feste Testrunde pro Tester und die Regel, dass Tester an bis zu zwei Kabel angeschlossen werden dürfen. Unbekannt: Welches der beiden Kabel defekt ist. Ziel: Einen Testplan entwickeln, der das defekte Kabel nach nur einer Testrunde identifiziert.\n\nInterne Anleitung für PIA: Verwende Hinweise, wenn nötig. Stufe 1: Wiederhole gegebenes/unbekanntes/Ziel. Stufe 2: Zeige auf Kabel-/Tester-/Regelinformationen. Stufe 3: Gib einen Satzanfang wie \"Das Unbekannte ist, welches Kabel ...\", der mit einer Ja/Nein-Bestätigungsfrage endet."
+                                           }
+                                       ],
+                      "system_info":  "Dieser Abschnitt enthält aufeinanderfolgende Gesprächsstationen. Beziehe dein Feedback auf die zuletzt sichtbare Frage und deren system_info; frühere erwartete Antworten gelten nur für die jeweilige frühere Frage. Wiederhole abgeschlossene Fragen nicht. Setze die Hinweisstufe für jede neue Frage zurück. Solange noch Gesprächseinträge folgen, bestätige kurz ohne Hinweis auf einen Themenwechsel: Die nächste Frage wird vom Skript eingeblendet. Verweise erst nach dem letzten Gesprächseintrag und dem Abschluss des Abschnitts auf die Navigation."
+                  },
+                  {
+                      "task_name":  "Dekomposition",
+                      "task_title":  "Dekomposition",
+                      "conversation":  [
+                                           {
+                                               "message":  "Nachdem wir das Problem verstanden haben, ist der nächste Schritt, dieses in kleinere, überschaubare Teile zu zerlegen. Diese Fähigkeit wird im Computational Thinking als Dekomposition bezeichnet. Wir benötigen diese Fähigkeit fast immer, wenn wir ein Problem bearbeiten. Dazu ein Beispiel: Wenn dein Fahrrad nicht funktioniert, untersuchst du nicht das ganze Fahrrad auf einmal. Stattdessen überprüfst du einzelne Bereiche wie die Bremsen, die Reifen, die Kette und die Schaltung. Genauso zerlegen wir auch das „Kabel und Tester“-Problem in kleinere Teilprobleme, um es Schritt für Schritt lösen zu können.\n\nWie können wir das Problem „Kabel und Tester“ in kleinere Teile zerlegen? Versuche, Folgendes zu identifizieren: A. die verfügbaren Ressourcen, B. die Regeln und Einschränkungen und C. die möglichen Ergebnisse in einer Testrunde für jeden Tester.\n\n![Kabel und Tester](figures/image3.png){width=520}",
+                                               "system_info":  "Interne Anleitung für PIA: Erwartete Antwort: Ressourcen: zwei Kabel und zwei Tester. Regeln/Einschränkungen: Genau ein Kabel ist defekt; Tester können bis zu zwei Kabel anschließen; eine feste Testrunde für jeden Tester; ein oder beide Tester können verwendet werden. Mögliche Ergebnisse: Jeder verwendete Tester zeigt ON oder OFF an. ON bedeutet, dass alle verbundenen Kabel funktionieren. OFF bedeutet, dass mindestens ein angeschlossenes Kabel defekt ist.\n\nInterne Anleitung für PIA: Gehe nicht weiter, bis der Teilnehmer Ressourcen, Einschränkungen und Ergebnisse unterscheiden kann."
+                                           }
+                                       ],
+                      "system_info":  "Dieser Abschnitt enthält aufeinanderfolgende Gesprächsstationen. Beziehe dein Feedback auf die zuletzt sichtbare Frage und deren system_info; frühere erwartete Antworten gelten nur für die jeweilige frühere Frage. Wiederhole abgeschlossene Fragen nicht. Setze die Hinweisstufe für jede neue Frage zurück. Solange noch Gesprächseinträge folgen, bestätige kurz ohne Hinweis auf einen Themenwechsel: Die nächste Frage wird vom Skript eingeblendet. Verweise erst nach dem letzten Gesprächseintrag und dem Abschluss des Abschnitts auf die Navigation."
+                  },
+                  {
+                      "task_name":  "Muster erkennen",
+                      "task_title":  "Muster erkennen",
+                      "conversation":  [
+                                           {
+                                               "message":  "Nachdem wir das Problem mithilfe der Dekomposition in kleinere Teile zerlegt haben, beschäftigen wir uns nun mit der „Mustererkennung“ bei Computational Thinking. Bei der Mustererkennung geht es darum, wiederkehrende Regeln, Strukturen, Ähnlichkeiten oder Zusammenhänge zu erkennen. Ein Muster ist eine wiederkehrende Regel, Struktur oder Beziehung, die sich in verschiedenen Fällen erkennen lässt.\n\nZur Wiederholung die wichtigsten Begriffe:\n\nOFF bedeutet, dass mindestens eines der mit dem Tester verbundenen Kabel defekt ist.\n\nON bedeutet, dass alle mit dem Tester verbundenen Kabel funktionieren.\n\nErgebniskombination - die Kombination der Anzeigen beider Tester nach einer Testrunde (z. B. Tester A zeigt  ON und Tester B  OFF).\n\nTestplan – ein vorher festgelegter Plan, welche Kabel mit welchen Testern verbunden werden. Der Testplan darf während einer Testrunde nicht mehr verändert werden.\n\nTestrunde – die Durchführung des Testplans. Die im Testplan vorgesehenen Kabel werden an die jeweiligen Tester angeschlossen und die Ergebnisse abgelesen.\n\nWir nutzen wieder das Einstiegsszenario mit zwei Kabeln. Eines der zwei Kabel ist defekt. Deine Aufgabe ist es, einen Testplan zu erstellen, mit dem man nach nur einer Testrunde das defekte Kabel identifizieren kann. Es gibt mehrere mögliche Testpläne, um das defekte Kabel zu identifizieren. Ein Testplan lautet: Verbinde ein Kabel, zum Beispiel Kabel 1, mit einem Tester, z.B. Tester A.\n\n![Kabel und Tester](figures/image8.png){width=520}\n\nTestplan 1: Kabel 1 ist mit Tester A verbunden.\n\nWenn Tester A nur an ein Kabel angeschlossen ist und OFF zeigt, was können wir daraus schließen?",
+                                               "system_info":  "Interne Anleitung für PIA: Erwartete Antwort: Das angeschlossene Kabel ist defekt. Da nur ein Kabel angeschlossen ist, muss OFF sich auf dieses Kabel beziehen."
+                                           },
+                                           {
+                                               "message":  "In unserem Einstiegsszenario sind wir davon ausgegangen, dass zwei Tester zur Verfügung stehen. Wir könnten auch beide Tester nutzen, um das defekte Kabel zu identifizieren. Der Testplan lautet nun: Verbinde Kabel 1 mit Tester A und Kabel 2 mit Tester B.\n\n![Kabel und Tester](figures/image9.png){width=520}\n\nTestplan 2: Kabel 1 zu Tester A und Kabel 2 zu Tester B.\n\nBei diesem Testplan hängt die Ergebniskombination davon ab, welches Kabel defekt ist. Es ergibt sich folgendes Zuordnungsmuster: Aus dem Testplan und der Ergebniskombination erkennt man, welches Kabel defekt ist.\n\n| Tester A mit Kabel 1 | Tester B mit Kabel 2 | Defektes Kabel | Warum? |\n| --- | --- | --- | --- |\n| OFF | ON | Kabel 1 | Tester A zeigt OFF an, also ist Kabel 1 defekt. |\n| ON | OFF | Kabel 2 | Tester B zeigt OFF an, also ist Kabel 2 defekt. |\n\nBisher haben wir betrachtet, wie sich aus einem konkreten Testplan und den angezeigten Ergebnissen auf das defekte Kabel schließen lässt. Nun betrachten wir ausschließlich die beiden Tester und fragen, welche Ergebniskombinationen sie grundsätzlich anzeigen können.\n\n![Kabel und Tester](figures/image10.png){width=520}\n\nZwei Tester, jeweils mit ON/OFF-Ergebnissen.\n\nJeder Tester kann unabhängig voneinander entweder ON oder OFF anzeigen. Welche Ergebniskombinationen sind mit zwei Testern grundsätzlich möglich? Noch ein Hinweis: Unter einer Ergebniskombination versteht man, die Anzeigen beider Tester.",
+                                               "system_info":  "Interne Anleitung für PIA: Erwartete Antwort: ON/ON, ON/OFF, OFF/ON, OFF/OFF. Es gibt vier mögliche Kombinationen, da jeder der beiden Tester ON oder OFF anzeigen kann."
+                                           },
+                                           {
+                                               "message":  "Es gibt insgesamt vier mögliche Ergebniskombinationen.\n\n![Kabel und Tester](figures/image11.png){width=520}\n\nWarum kann man anhand eines Ergebnismusters das defekte Kabel identifizieren?",
+                                               "system_info":  "Interne Anleitung für PIA: Ergebniskombination der Tester hängt davon ab, welches Kabel defekt ist und wie die Kabel im Testplan mit den Testern verbunden sind. Kennt man den Testplan, kann man anhand der Ergebniskombination auf das defekte Kabel schließen; ."
+                                           },
+                                           {
+                                               "message":  "Wir haben also ein logisches Zuordnungsmuster erkannt: Testplan + Ergebniskombination  geben Rückschluss auf das defekte Kabel.",
+                                               "system_info":  "",
+                                               "action":  "continue"
+                                           }
+                                       ],
+                      "system_info":  "Dieser Abschnitt enthält aufeinanderfolgende Gesprächsstationen. Beziehe dein Feedback auf die zuletzt sichtbare Frage und deren system_info; frühere erwartete Antworten gelten nur für die jeweilige frühere Frage. Wiederhole abgeschlossene Fragen nicht. Setze die Hinweisstufe für jede neue Frage zurück. Solange noch Gesprächseinträge folgen, bestätige kurz ohne Hinweis auf einen Themenwechsel: Die nächste Frage wird vom Skript eingeblendet. Verweise erst nach dem letzten Gesprächseintrag und dem Abschluss des Abschnitts auf die Navigation."
+                  },
+                  {
+                      "task_name":  "Von drei Kabeln das defekte identifizieren",
+                      "task_title":  "Von drei Kabeln das defekte identifizieren",
+                      "conversation":  [
+                                           {
+                                               "message":  "Nun wird die Aufgabe schwieriger. Wir haben drei Kabel und wieder zwei Tester, Tester A und Tester B. Genau eines der drei Kabel ist defekt.\n\n![Kabel und Tester](figures/image12.png){width=520}\n\nSzenario mit drei Kabeln und zwei Testern.\n\nFür die Testrunde gelten wieder folgende Regeln:\n\nTester A und Tester B werden jeweils einmal benutzt.\n\nEin Kabel kann mit Tester A, mit Tester B, mit beiden Testern oder mit keinem Tester verbunden werden.\n\nDer gesamte Testplan wird vor Beginn der Testrunde festgelegt. Das bedeutet: Schon vorher steht fest, welche Kabel mit Tester A und welche mit Tester B geprüft werden. Erst danach beginnt die Testrunde. Zuerst wird Tester A verwendet, anschließend Tester B.\n\nWährend der Testrunde darf der Testplan nicht mehr verändert werden. Die Kabel an Tester B dürfen also nicht abhängig davon ausgewählt werden, was Tester A angezeigt hat. Stell dir den Testplan wie eine fertige Versuchsanleitung vor: Eine andere Person bekommt die Anleitung und führt genau die dort beschriebenen Schritte aus. Sie darf während der Testrunde nichts mehr verändern.\n\nZurück zur Aufgabe. Müssen alle drei Kabel an einen Tester angeschlossen werden? Bitte begründe deine Antwort.",
+                                               "system_info":  "Interne Anleitung für PIA: Erwartete Antwort: Nein. Nur zwei der drei Kabel müssen getestet werden. Ein Kabel kann absichtlich ungetestet bleiben. Wenn beide getesteten Kabel funktionieren, muss das ungetestete Kabel defekt sein, weil genau ein Kabel defekt ist."
+                                           },
+                                           {
+                                               "message":  "Wie viele Tester müssen wir verwenden, um drei mögliche defekte Kabel zu unterscheiden?",
+                                               "system_info":  "Interne Anleitung für PIA: Erwartete Antwort: Beide Tester werden benötigt. Mit einem einzigen Tester kann man in einer festen Testrunde nicht drei mögliche defekte Kabel unterscheiden."
+                                           },
+                                           {
+                                               "message":  "Jetzt erstelle einen Testplan, der nach einer Testrunde erkennen kann, welches der drei Kabel defekt ist.",
+                                               "system_info":  "Interne Anleitung für PIA: Erwartete Antwort: Ein effizienter Plan ist: Kabel 1 an Tester A, Kabel 2 an Tester B, Kabel 3 ungetestet. Andere gleichwertige Pläne sind möglich, wenn sie das defekte Kabel eindeutig identifizieren."
+                                           },
+                                           {
+                                               "message":  "Nachdem die Testrunde durchgeführt wurde, können Tester A und B eine der unten angegebenen Ergebniskombinationen anzeigen. Wir haben auch hier ein logisches Zuordnungsmuster: Testplan + Ergebniskombination  geben Rückschluss auf das defekte Kabel. Gib für Zeile 1, 2 und 3 auf, welches Kabel bei den jeweiligen ON/OFF Kombinationen das defekte ist.\n\nFür diese Tabelle verwenden wir den festen Beispielplan: Kabel 1 an Tester A, Kabel 2 an Tester B, Kabel 3 bleibt ungetestet. Gib für jede Zeile an, welches Kabel defekt ist.\n\n|  | Tester A mit Kabel 1 | Tester B mit Kabel 2 |\n| --- | --- | --- |\n| 1: Welches Kabel ist defekt? | ON | ON |\n| 2: Welches Kabel ist defekt? | OFF | ON |\n| 3: Welches Kabel ist defekt? | ON | OFF |",
+                                               "system_info":  "Interne Anleitung für PIA: Erwartete Anordnung: 1) ON/ON -\u003e Kabel 3; 2) OFF/ON -\u003e Kabel 1; 3) ON/OFF -\u003e Kabel 2."
+                                           },
+                                           {
+                                               "message":  "Warum kann OFF/OFF in diesem Drei-Kabel-Testplan nicht auftreten?",
+                                               "system_info":  "Interne Anleitung für PIA: Erwartete Antwort: Weil genau ein Kabel defekt ist. Kabel 1 und Kabel 2 werden separat getestet. OFF/OFF würde bedeuten, dass sowohl Kabel 1 als auch Kabel 2 defekt sind, was der Regel widerspricht, dass genau ein Kabel defekt ist."
+                                           }
+                                       ],
+                      "system_info":  "Dieser Abschnitt enthält aufeinanderfolgende Gesprächsstationen. Beziehe dein Feedback auf die zuletzt sichtbare Frage und deren system_info; frühere erwartete Antworten gelten nur für die jeweilige frühere Frage. Wiederhole abgeschlossene Fragen nicht. Setze die Hinweisstufe für jede neue Frage zurück. Solange noch Gesprächseinträge folgen, bestätige kurz ohne Hinweis auf einen Themenwechsel: Die nächste Frage wird vom Skript eingeblendet. Verweise erst nach dem letzten Gesprächseintrag und dem Abschluss des Abschnitts auf die Navigation."
+                  },
+                  {
+                      "task_name":  "Von vier Kabeln das defekte identifizieren",
+                      "task_title":  "Von vier Kabeln das defekte identifizieren",
+                      "conversation":  [
+                                           {
+                                               "message":  "In dieser Aufgabe wird das Problem komplexer: Du lernst, wie die bereits bekannten Regeln und Zusammenhänge bei vier Kabeln zusammenspielen und wie damit das defekte Kabel eindeutig identifiziert werden kann. Wir betrachten folgendes Szenario mit vier Kabeln und zwei Testern (Tester A und Tester B):\n\n![Kabel und Tester](figures/image13.png){width=520}\n\nBevor du die Aufgabe löst, sieh dir noch einmal die Regeln an:\n\nJeder Tester hat zwei Anschlüsse. Es können also ein oder zwei Kabel gleichzeitig an einen Tester angeschlossen werden.\n\nEin Kabel darf mit beiden Testern geprüft werden. Zum Beispiel kann Kabel 1 bei der Prüfung mit Tester A und später auch bei der Prüfung mit Tester B angeschlossen sein.\n\nDer gesamte Testplan wird vor Beginn der Testrunde festgelegt. Das bedeutet: Schon vorher steht fest, welche Kabel mit Tester A und welche mit Tester B geprüft werden.\n\nErst danach beginnt die Testrunde. Zuerst wird Tester A verwendet, anschließend Tester B. Tester A und Tester B werden also jeweils nur einmal verwendet.\n\nWährend der Testrunde darf der Testplan nicht mehr verändert werden. Die Kabel an Tester B dürfen also nicht abhängig davon ausgewählt werden, was Tester A angezeigt hat.\n\nWie bei den Beispielen zuvor gibt es mehrere mögliche Testpläne. Ein Testplan könnte so aussehen:\n\nKabel 4 bleibt ungetestet.\n\nKabel 1 und Kabel 2 werden an Tester A geprüft.\n\nDanach wird Kabel 1 zusammen mit Kabel 3 an Tester B geprüft.\n\nKabel 1 wird also zweimal geprüft.\n\nZu Schritt 1: Kannst du erklären, warum Kabel 4 ungetestet bleibt?\n\n![Kabel und Tester](figures/image14.png){width=520}\n\nSchritt 1: Kabel 4 bleibt ungetestet.",
+                                               "system_info":  "Interne Anleitung für PIA: Erwartete Antwort: Aus den Fällen mit zwei und drei Kabeln wissen wir, dass nicht jedes Kabel getestet werden muss. Wenn alle getesteten Kabel funktionieren, muss das ungetestete Kabel defekt sein, weil genau ein Kabel defekt ist. Welches Kabel das ist, können wir frei wählen."
+                                           },
+                                           {
+                                               "message":  "Zu Schritt 2: Zwei Kabel, in unserem Fall Kabel 1 und Kabel 2, werden an Tester A geprüft. Welchen Sinn macht das?\n\n![Kabel und Tester](figures/image15.png){width=520}\n\nSchritt 2: Kabel 1 und Kabel 2 sind an Tester A angeschlossen.",
+                                               "system_info":  "Interne Anleitung für PIA: Erwartete Antwort: Da Kabel 4 nicht getestet wird, müssen die Kabel 1, 2 und 3 mit zwei Testern überprüft werden. Tester A verwendet beide Anschlüsse, um zwei dieser Kabel zu testen. Würde Tester A nur ein Kabel prüfen, müsste Tester B die beiden übrigen Kabel gemeinsam prüfen. Dann könnten wir bei einem Defekt bei einem dieser Kabel nicht erkennen, welches defekt ist. Der Tester zeigt ja nur an, dass irgendeines der angeschlossenen Kabel defekt ist. Wir nutzen daher beide Anschlüsse von Tester A."
+                                           },
+                                           {
+                                               "message":  "Zu Schritt 3: Danach wird Kabel 1 zusammen mit Kabel 3 an Tester B geprüft. Welchen Sinn macht das?\n\n![Kabel und Tester](figures/image16.png){width=520}\n\nSchritt 3: Kabel 3 und Kabel 1 sind an Tester B angeschlossen.",
+                                               "system_info":  "Interne Anleitung für PIA: Erwartete Antwort: Kabel 3 muss mit Tester B verbunden sein, da es nicht von Tester A getestet wurde. Kabel 1 wird erneut getestet, weil Tester A Kabel 1 und Kabel 2 zusammen testet. Zeigt Tester A OFF an, werden zusätzliche Informationen benötigt, um Kabel 1 von Kabel 2 zu unterscheiden. Tester B liefert diese Informationen, ohne den festen Plan zu ändern. So liefert Tester B später die zusätzliche Information, mit der wir Kabel 1 und Kabel 2 unterscheiden können – ohne den Testplan nachträglich zu verändern."
+                                           },
+                                           {
+                                               "message":  "Unten siehst du die möglichen Ergebniskombinationen für den vorherigen Testplan. Ergänze die Tabelle, indem du das defekte Kabel für jede Ergebniskombination identifizierst. Können wir nun anhand der möglichen Ergebniskombinationen erkennen, ob der Testplan funktioniert? Gib für Zeile 1, 2, 3 und 4 an, welches Kabel bei den jeweiligen ON/OFF Kombinationen das defekte ist.\n\n| Ergebnis | Tester A mit den Kabeln 1 und 2 | Tester B mit den Kabeln 3 und 1 |\n| --- | --- | --- |\n| 1: Welches Kabel ist defekt? | OFF | ON |\n| 2: Welches Kabel ist defekt? | OFF | OFF |\n| 3: Welches Kabel ist defekt? | ON | OFF |\n| 4: Welches Kabel ist defekt? | ON | ON |",
+                                               "system_info":  "Interne Anleitung für PIA: Erwartete Anordnung: 1 OFF/ON -\u003e Kabel 2; 2 OFF/OFF -\u003e Kabel 1; 3 ON/OFF -\u003e Kabel 3; 4 ON/ON -\u003e Kabel 4."
+                                           },
+                                           {
+                                               "message":  "Welches Muster sehen wir in dieser Tabelle? Warum erlaubt uns dieser Plan, das defekte Kabel nach nur einer festen Testrunde zu identifizieren?",
+                                               "system_info":  "Interne Anleitung für PIA: Erwartete Antwort: Jedes mögliche defekte Kabel erzeugt eine eindeutige ON/OFF-Ergebniskombination. Daher liefert die Kombination aus Testplan + Ergebnis eine eindeutige Schlussfolgerung über das fehlerhafte Kabel."
+                                           }
+                                       ],
+                      "system_info":  "Dieser Abschnitt enthält aufeinanderfolgende Gesprächsstationen. Beziehe dein Feedback auf die zuletzt sichtbare Frage und deren system_info; frühere erwartete Antworten gelten nur für die jeweilige frühere Frage. Wiederhole abgeschlossene Fragen nicht. Setze die Hinweisstufe für jede neue Frage zurück. Solange noch Gesprächseinträge folgen, bestätige kurz ohne Hinweis auf einen Themenwechsel: Die nächste Frage wird vom Skript eingeblendet. Verweise erst nach dem letzten Gesprächseintrag und dem Abschluss des Abschnitts auf die Navigation."
+                  },
+                  {
+                      "task_name":  "Nicht-adaptives Testen",
+                      "task_title":  "Nicht-adaptives Testen",
+                      "conversation":  [
+                                           {
+                                               "message":  "Du hast hier ein wichtiges Vorgehen kennengelernt: das nicht-adaptive Testen. Dabei wird ein Testplan im Voraus festgelegt und während der Testung nicht an die Ergebnisse angepasst. Aber warum ist es manchmal wichtig, dass ein Testplan schon vorher vollständig feststeht?",
+                                               "system_info":  "\n\nNach der eigenen Überlegung der lernenden Person kurz diese Einordnung geben:\nStell dir vor, du entwickelst einen Testplan, der später von einer anderen Person oder einer Maschine durchgeführt wird. Diese folgt genau deiner Anleitung, ohne selbst Entscheidungen zu treffen. Deshalb musst du bereits bei der Planung alle möglichen Testergebnisse berücksichtigen und sicherstellen, dass der Testplan unabhängig von den einzelnen Ergebnissen funktioniert. Wo werden solche Testpläne in der Praxis eingesetzt?\n\nNicht-adaptive Testverfahren werden beispielsweise in der medizinischen Diagnostik oder in der technischen Qualitätskontrolle eingesetzt, wenn mehrere Tests nach einem festgelegten Plan durchgeführt und ihre Ergebnisse anschließend gemeinsam ausgewertet werden. Auch in der psychologischen Forschung werden Untersuchungsabläufe häufig im Voraus festgelegt, damit alle Teilnehmenden unter vergleichbaren Bedingungen untersucht werden.\nStelle nach der ersten Begründung die Praxisfrage aus dem Quelltext und warte auf eine Antwort, bevor du Beispiele gibst. Erwartete Begründung: Der Plan kann ohne weitere Entscheidungen durchgeführt werden; alle möglichen Ergebnisse müssen im Voraus berücksichtigt sein. Bei korrekter Begründung keine unnötigen Hinweise geben."
+                                           }
+                                       ],
+                      "system_info":  "Dieser Abschnitt enthält aufeinanderfolgende Gesprächsstationen. Beziehe dein Feedback auf die zuletzt sichtbare Frage und deren system_info; frühere erwartete Antworten gelten nur für die jeweilige frühere Frage. Wiederhole abgeschlossene Fragen nicht. Setze die Hinweisstufe für jede neue Frage zurück. Solange noch Gesprächseinträge folgen, bestätige kurz ohne Hinweis auf einen Themenwechsel: Die nächste Frage wird vom Skript eingeblendet. Verweise erst nach dem letzten Gesprächseintrag und dem Abschluss des Abschnitts auf die Navigation."
+                  },
+                  {
+                      "task_name":  "Ende der Aufgabe",
+                      "task_title":  "Ende der Aufgabe",
+                      "conversation":  [
+                                           {
+                                               "message":  "Du hast die Aufgabe „Kabel und Tester“ abgeschlossen. Danke. Bitte informiere die Untersuchungsleiterin, wenn du fertig bist.",
+                                               "system_info":  "",
+                                               "action":  "continue"
+                                           }
+                                       ],
+                      "system_info":  "Dieser Abschnitt enthält aufeinanderfolgende Gesprächsstationen. Beziehe dein Feedback auf die zuletzt sichtbare Frage und deren system_info; frühere erwartete Antworten gelten nur für die jeweilige frühere Frage. Wiederhole abgeschlossene Fragen nicht. Setze die Hinweisstufe für jede neue Frage zurück. Solange noch Gesprächseinträge folgen, bestätige kurz ohne Hinweis auf einen Themenwechsel: Die nächste Frage wird vom Skript eingeblendet. Verweise erst nach dem letzten Gesprächseintrag und dem Abschluss des Abschnitts auf die Navigation."
+                  }
+              ],
+    "sidebar_reference":  "cables_and_tester_03.md"
+}

@@ -1,0 +1,10 @@
+{
+    "activity_id":  "pia_robot_and_batteries",
+    "status":  "ready",
+    "activity_name":  "Roboter und Batterien",
+    "role":  "PIA",
+    "intro_sequence":  "intro.md",
+    "tasks":  [
+
+              ]
+}
