@@ -25,7 +25,8 @@
             "task_name": "Problemformulierung",
             "task_title": "Problemformulierung",
             "intro_sequence": [
-                "robot_and_battery_01.md"
+                "robot_and_battery_01.md",
+                "robot_and_battery_02.md"
             ],
             "conversation": [
                 {
@@ -37,7 +38,8 @@
             "task_name": "Dekomposition",
             "task_title": "Dekomposition",
             "intro_sequence": [
-                "robot_and_battery_04.md"
+                "robot_and_battery_04.md",
+                "robot_and_battery_05.md"
             ],
             "conversation": [
                 {
