@@ -10,6 +10,7 @@ services:
       - ./data:/app/data
     environment:
       - OLLAMA_BASE_URL=http://host-gateway:11434/v1
+      - AILA_DIAGNOSTICS=1      
     extra_hosts:
       - "host-gateway:host-gateway"
     labels:
