@@ -51,7 +51,8 @@ def render_study(snapshot, state, save):
         if phase == "post_survey":
             st.success(f"Lernaktivität {state['activity_index'] + 1} abgeschlossen.")
             activity_id = current_activity_id(snapshot, state)
-            render_chat_download(snapshot["activities"][activity_id], state["activities"][activity_id])
+            render_chat_download(snapshot["activities"][activity_id], state["activities"][activity_id],
+                                 participant_code=state.get("participant_code"))
         if checkpoint["text"]:
             render_markdown(checkpoint["text"], STUDY_ROOT)
         st.link_button("Fragebogen in neuem Tab öffnen", checkpoint["survey_url"])
@@ -65,7 +66,8 @@ def render_study(snapshot, state, save):
         for activity_id, progress in state["activities"].items():
             activity = snapshot["activities"][activity_id]
             with st.expander(f"{activity['role']} · {activity['activity_name']}"):
-                render_chat_download(activity, progress, key=f"download_{activity_id}")
+                render_chat_download(activity, progress, key=f"download_{activity_id}",
+                                     participant_code=state.get("participant_code"))
                 for message in progress["messages"]:
                     with st.chat_message(message["role"]):
                         render_message(message, activity_base(activity))

@@ -11,7 +11,7 @@ C. Was ist die Gesamtdistanz, die Robo in diesem Baum zurücklegt?
 </details>
 
 <details>
-<summary>B: Betrachte eine einzelne Verbindungslinie (z.B. die zwischen Robos Startpunkt und dem ersten Knoten). Wie oft geht Robo über diese Verbindungslinie, wenn er beide Batterien einsammelt und wieder zum Startpunkt zurückkehrt? Begründe deine Antwort.</<summary>
+<summary>B: Betrachte eine einzelne Verbindungslinie (z.B. die zwischen Robos Startpunkt und dem ersten Knoten). Wie oft geht Robo über diese Verbindungslinie, wenn er beide Batterien einsammelt und wieder zum Startpunkt zurückkehrt? Begründe deine Antwort.</summary>
 **Lösung:** Robo benutzt die Verbindungslinie zuerst auf dem Weg zu den Batterien. Da er nach dem Einsammeln der Batterien wieder zum Startpunkt zurückkehren muss, benutzt er dieselbe Verbindungslinie ein zweites Mal auf dem Rückweg. Jede Verbindungslinie wird daher einmal auf dem Hinweg und einmal auf dem Rückweg genutzt. Robo durchläuft jede Verbindungslinie insgesamt zweimal.
 </details>
 

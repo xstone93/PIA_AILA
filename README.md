@@ -70,20 +70,21 @@ study/
   completion.md
 ```
 
-Each activity folder owns its Markdown and figures. The existing AILA teaching sequence is preserved. Its missing `robot_and_battery_04.md` is a compatibility copy of the existing decomposition page `_02.md`; review it before study use.
+Each activity folder owns its Markdown and figures. AILA robot preparation and teaching directions live in Markdown; flexible section guidance lives in the activity JSON. The tutor controls the conversation and section navigation.
 
 `activity_id` is stable, for example `aila_robot_and_batteries`. `role` is `PIA` or `AILA`, `activity_name` is the display title, and `status` is `draft` or `ready`. Activity `intro_sequence` names one Markdown file. The JSON `tasks` array holds internal sections with `task_title`, an optional list of Markdown `intro_sequence` pages, and `conversation` entries.
 
-Reusable instructions live in each role's `role.md`. Optional activity `role_description` and `system_info` supplement them. PIA's validator permits explanations, teaching and feedback. AILA's validator protects the student role and prescribed misconceptions. This is model-based guidance, not a guarantee. AcademicAI instructions are embedded in a copy of the latest user turn because the adapter accepts user/assistant roles.
+Reusable instructions live in each role's `role.md`. Optional activity `role_description` and `system_info` supplement them. AILA receives role and section guidance in one generation request; its replies are not classified, rewritten or blocked by a second model. PIA retains response validation and learner-answer completion checking. Role adherence is model-based guidance, not a guarantee. AcademicAI instructions are embedded in a copy of the latest user turn because the adapter accepts user/assistant roles.
 
 ## Activity behavior
 
-- **Chat herunterladen** exports the current visible transcript as UTF-8 Markdown with activity name, role, UTC export date, task headings and speaker labels. Available during activities, at post-activity questionnaires, and for each transcript at study completion. Diagrams become text references; internal instructions, unrevealed scripted messages and session metadata are excluded. Anything participants type in chat remains part of their transcript.
+- **Chat herunterladen** exports the current visible transcript as UTF-8 Markdown with activity name, role, study participant ID (`participant_code`), UTC export date, task headings and speaker labels. Each message includes its timestamp, displayed in Europe/Vienna time (CET/CEST), matching the chat. Available during activities, at post-activity questionnaires, and for each transcript at study completion. Diagrams become text references. Internal instructions, unrevealed scripted messages and session links remain excluded. Previews without enrollment show “Nicht hinterlegt” for the participant ID. Anything participants type in chat remains part of their transcript.
+- New user, generated-agent and visible scripted-agent messages store a UTC `timestamp` once when created. User time is captured on submission; generated-agent time is captured after the response is available. Reloads and exports reuse those stored times. Older messages without timestamps show “Zeitstempel nicht verfügbar”; their dates are not fabricated. Message timestamps are display/persistence metadata and are not added to model requests. No database migration is needed.
 - A compact progress bar above the chat controls shows the current section for both PIA and AILA. It counts sections already passed and reaches 100% when the activity is finished; individual chat messages do not count as separate tasks.
 - `message` is Markdown; `type: "bold"` emphasizes it and `type: "image"` displays a local image. Paths are relative to the activity JSON.
 - Omit `message` to wait silently for the participant. No request occurs before the user sends a message.
 - `action: "no_wait"` reveals the next entry immediately; default `wait` waits for input; `continue` offers navigation without another exchange.
-- After a validated response, a separate completion check assesses the current question. Only confirmed completion reveals the next entry or unlocks next-topic navigation. Partial/incorrect answers, clarification and unrelated requests stay on the current question; a bare "weiter" cannot complete it. PIA checks learner answers; AILA follows the current step's tutor explanation/confirmation requirements. Unusable completion decisions keep the step open while preserving the exchange. Generation failures neither save the failed turn nor advance the script. Completion checks add a model request and log their start and result without conversation content.
+- PIA validates the response, then separately assesses the learner's answer before advancing a scripted question or unlocking navigation. Unusable completion decisions preserve the exchange and show a warning. AILA makes one generation request, saves the exchange and leaves section completion to the human tutor. After a successful exchange the tutor may keep chatting or explicitly confirm navigation; no model grades the tutor or gates explanation/application phases. API failures do not save the failed exchange or advance progress.
 - PIA Cables & Tester groups each topic into one task with multiple `conversation` entries. For example, all four entries for **Muster erkennen** share one heading; the next-topic button appears after the topic's final entry.
 - Section intros appear in the information sidebar. Markdown images and `<details><summary>…</summary>…</details>` expanders are supported. `![Alt](figures/image.png){width=240}` sets optional image width.
 - An activity may set `sidebar_reference` to a Markdown reference page available throughout the chat. This does not pause the conversation or require an introduction confirmation. PIA Cables & Tester uses this for its glossary and keeps teaching context in chat messages.
@@ -100,8 +101,31 @@ Sessions snapshot study configuration, study Markdown text, role instructions, a
 
 ## Code organization
 
-`content_registry.py` resolves and validates activities; `study_flow.py` owns study transitions; `study_ui.py` renders study pages. `app.py` coordinates these with shared activity UI. `activity.py` handles sections and prompts; `guardrail.py` validates replies; `academic.py` sends model requests; `session_store.py` manages SQLite. `presentation.py` and `timing.py` provide styling and timing diagnostics.
+`content_registry.py` resolves and validates activities; `study_flow.py` owns study transitions; `study_ui.py` renders study pages. `app.py` coordinates these with shared activity UI. `activity.py` handles sections, prompts and progression; `guardrail.py` sends AILA replies directly and validates PIA replies; `completion.py` checks PIA learner answers; `academic.py` sends model requests; `session_store.py` manages SQLite. `presentation.py` and `timing.py` provide styling and timing diagnostics.
 
 Console timing records requests and saves without logging prompts, replies, participant codes, credentials, or session links.
 
-For `reply_total ... outcome=AcademicAIResponseError`, check the preceding `minimal_chat.guardrail` events. `guardrail_rejected` records the role, attempt (1 or 2), and violation count; `invalid_validator_json` and `invalid_validator_schema` distinguish unreadable JSON from an invalid decision structure. `invalid_api_response` identifies whether generation or validation received an unusable API response. `guardrail_accepted` records a successful attempt; `guardrail_failed` records exhausted or invalid validation. Model-generated violation explanations and response bodies are never logged. Rejections still receive at most one retry, and unchecked replies remain blocked.
+AILA normally makes **one model request** per message. PIA normally makes three (generation, validation and completion), with at most one generation/validation retry. There is no transition classifier, AILA completion classifier, evidence heuristic or quality-repair fallback. Technical HTTP, JSON and nonempty-response checks remain in `academic.py` for every API request.
+
+For PIA errors, `guardrail_error` includes a reason and reference. `completion_error` identifies a technical learner-answer check failure; this preserves the exchange without unlocking navigation. A valid `step_complete=false` is an ordinary unfinished PIA step. Normal console logs exclude drafts and model-generated reasons.
+
+### Inspecting model decisions locally
+
+Detailed diagnostics are **off by default**. Enable them explicitly in the terminal used to launch Streamlit:
+
+```powershell
+$env:AILA_DIAGNOSTICS = '1'
+.\.venv\Scripts\python.exe -m streamlit run app.py
+```
+
+Reproduce the issue and look up the displayed reference in `data/model_diagnostics.jsonl`:
+
+```powershell
+Get-Content data/model_diagnostics.jsonl -Encoding utf8 |
+    ConvertFrom-Json | Where-Object reference -EQ 'REFERENCE_FROM_ERROR' |
+    ConvertTo-Json -Depth 20
+```
+
+AILA records `response_generated` with its section and reply. There are no AILA rejection or completion classifications. PIA records validator reasons, retries and completion explanations. Records contain participant text and internal model content: they stay in the git-ignored `data/` directory, are excluded from the learner UI and chat export, and are not automatically deleted. No credentials or session identifiers are added by the recorder. Delete diagnostic files when no longer needed. Disable collection with `Remove-Item Env:AILA_DIAGNOSTICS`, then restart Streamlit.
+
+New AILA robot sessions use one conversation entry per section with flexible teaching guidance. Sections and left-panel materials are unchanged. Saved sessions retain their original snapshot; legacy silent explanation/application entries are made available together in the prompt and no longer gate navigation. No stored sessions are migrated or rewritten. For a clean comparison with the new content, start a **new preview session**.

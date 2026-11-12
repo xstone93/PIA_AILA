@@ -5,7 +5,7 @@ B. Vervollständige den Satz: „Die Regel bzw. das Muster lautet also: Die Gesa
 
 
 <details>
-<summary>A. Steigt die Gesamtstrecke proportional zur Anzahl der Verbindungen? Überlege dir dazu: Wie groß wäre die Gesamtdistanz bei 7 Verbindungslinien? Und bei 14 Verbindungslinien? Erkennst du ein Muster zwischen der Anzahl der Verbindungslinien und der Gesamtdistanz?</summary>
+<summary>A. Steigt die Gesamtstrecke proportional zur Anzahl der Verbindungen? Überlege dir dazu: Wie groß wäre die Gesamtdistanz bei 14 Verbindungslinien? Und bei 4 Verbindungslinien? Erkennst du ein Muster zwischen der Anzahl der Verbindungslinien und der Gesamtdistanz?</summary>
 **Lösung:** Ja, die Gesamtdistanz steigt proportional zur Anzahl der Verbindungslinien. Bei 14 Verbindungslinien beträgt die Gesamtdistanz 28, bei 4 Verbindungslinien beträgt sie 8. Mit jeder zusätzlichen Verbindungslinie steigt die Gesamtdistanz um 2.
 </details>
 

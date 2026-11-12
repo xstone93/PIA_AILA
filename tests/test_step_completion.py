@@ -14,8 +14,39 @@ import session_store
 
 
 class StepCompletionTest(unittest.TestCase):
-    def test_navigation_alone_never_completes_either_role(self):
-        for role in ("PIA", "AILA"):
+    def test_completion_service_failure_is_explained_and_does_not_unlock_navigation(self):
+        with tempfile.TemporaryDirectory() as temp, patch.object(
+            session_store, "DB_PATH", Path(temp) / "sessions.sqlite3"
+        ), patch("guardrail.guarded_reply", return_value="Danke!"), patch(
+            "completion.reply", return_value="not JSON"
+        ):
+            activity = {"activity_id": "pia_cables_and_tester", "role": "PIA",
+                        "activity_name": "Test", "intro_sequence": "intro.md",
+                        "sidebar_reference": "intro.md", "tasks": [
+                            {"task_title": "Fragen", "conversation": [{"system_info": "Wait"}]}]}
+            state = {"started": True, "completed": False, "task_index": 0, "messages": []}
+            enter_task(state, activity["tasks"][0])
+            token = session_store.SessionStore().create(activity, state)
+            app = AppTest.from_file(str(Path(__file__).resolve().parents[1] / "app.py"))
+            app.query_params["session"] = token
+            app.run()
+            app.chat_input[0].set_value("Ja, genau.").run()
+            app.run()
+            self.assertFalse(app.exception)
+            self.assertEqual(len(app.session_state["activity_state"]["messages"]), 2)
+            self.assertFalse(app.session_state["activity_state"]["completion_verified"])
+            self.assertNotIn("finish_activity", [button.key for button in app.button])
+            self.assertIn("Abschlussprüfung ist technisch fehlgeschlagen", app.warning[0].value)
+            self.assertIn("Fehlerreferenz:", app.warning[0].value)
+            with patch("completion.step_complete", return_value=True):
+                app.chat_input[0].set_value("Ja, richtig verstanden.").run()
+            app.run()
+            self.assertFalse(app.exception)
+            self.assertFalse(app.warning)
+            self.assertTrue(app.button(key="finish_activity"))
+
+    def test_navigation_alone_never_completes_pia(self):
+        for role in ("PIA",):
             with self.subTest(role=role), patch("completion.reply") as request:
                 self.assertFalse(step_complete([{"role": "user", "content": "weiter"}], "Weiter!", "Task", role))
                 request.assert_not_called()
@@ -31,7 +62,7 @@ class StepCompletionTest(unittest.TestCase):
                 self.assertFalse(step_complete([{"role": "user", "content": "Antwort"}], "Feedback", "Task", "PIA"))
 
     def test_role_and_current_step_history_reach_completion_check(self):
-        for role in ("PIA", "AILA"):
+        for role in ("PIA",):
             for complete in (True, False):
                 with self.subTest(role=role, complete=complete), patch(
                     "completion.reply", return_value=json.dumps({"step_complete": complete})
@@ -55,7 +86,7 @@ class StepCompletionTest(unittest.TestCase):
         self.assertNotIn("FUTURE ANSWER", prompt)
 
     def test_ui_requires_completion_before_advancement_and_navigation(self):
-        for role in ("PIA", "AILA"):
+        for role in ("PIA",):
             with self.subTest(role=role), tempfile.TemporaryDirectory() as temp, patch.object(
                 session_store, "DB_PATH", Path(temp) / "sessions.sqlite3"
             ), patch("guardrail.guarded_reply", return_value="Bitte ergänze deine Antwort."):
@@ -89,7 +120,7 @@ class StepCompletionTest(unittest.TestCase):
                     app.chat_input[0].set_value("Noch unvollständig").run()
                 app.run()
                 self.assertNotIn("next_task", [b.key for b in app.button])
-                # An accepted final answer (or tutor confirmation for AILA) unlocks navigation.
+                # An accepted final learner answer unlocks PIA navigation.
                 with patch("completion.step_complete", return_value=True):
                     app.chat_input[0].set_value("Jetzt vollständig bestätigt").run()
                 app.run()

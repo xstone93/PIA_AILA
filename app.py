@@ -9,12 +9,12 @@ from academic import error_message
 from guardrail import guarded_reply as reply
 
 from activity import (
-    advance, render_markdown,
+    advance, finish_reply, render_markdown,
     render_message, system_prompt, render_intro, enter_task, start_conversation,
 )
 from session_store import SessionConflict, SessionStore
 from presentation import page_style, celebrate, scroll_to_latest, control_sidebar, render_task_progress
-from timing import measure
+from timing import measure, utc_timestamp
 from content_registry import activity_base, markdown_text
 from study_flow import load_study, initial_study_state, save_activity_progress
 from study_ui import render_study
@@ -22,6 +22,7 @@ import session_store
 from task_preview import render_preview_picker
 from chat_export import render_chat_download
 from completion import step_complete
+from diagnostics import diagnostic_scope
 
 
 st.set_page_config(page_title="Learn Computational Thinking", layout="wide",
@@ -140,7 +141,9 @@ conversation = task.get("conversation", [])
 intro_only = not conversation
 has_next_task = state["task_index"] + 1 < len(activity["tasks"])
 script_finished = state["next_message"] == len(conversation)
-can_continue = intro_only or state["action"] == "continue" or (script_finished and state.get("completion_verified", False))
+can_continue = intro_only or state["action"] == "continue" or (script_finished and (
+    state.get("answered", False) if activity["role"] == "AILA" else state.get("completion_verified", False)
+))
 intro_pending = bool(intro_files) and not state["conversation_started"] and not state["completed"]
 page_style()
 sidebar_task = (session_id, activity.get("activity_id"), state["task_index"])
@@ -253,11 +256,27 @@ if state["completed"]:
 if st.session_state.pop("celebrate_completion", None) == session_id and state["completed"]:
     celebrate()
 
+completion_notice = st.session_state.get("completion_notice") if activity["role"] == "PIA" else None
+if completion_notice and completion_notice[0] == session_id:
+    st.warning(
+        "Deine Nachricht und die Antwort wurden gespeichert. Die automatische "
+        "Abschlussprüfung ist technisch fehlgeschlagen; der Gesprächsschritt bleibt offen. "
+        "Dies ist keine Bewertung deiner Antwort. Bitte versuche es mit einer kurzen Rückmeldung erneut. "
+        f"Fehlerreferenz: {completion_notice[1]}"
+    )
+if activity["role"] == "AILA" and not intro_pending and not state["completed"]:
+    if can_continue:
+        st.caption("Du entscheidest als Tutor:in, wann ihr diesen Abschnitt ausreichend besprochen habt. "
+                   + ("Dann kannst du „Weiter zum nächsten Thema“ wählen." if has_next_task else "Dann kannst du „Fertig“ wählen."))
+    elif state.get("conversation_started"):
+        st.caption("Beginne das Gespräch mit AILA. Danach entscheidest du, wann ihr weitergeht. "
+                   "Die Aufgaben findest du unter „Information“.")
+
 prompt = None
 with st.container(key="chat_dock"):
     render_task_progress(activity, state)
     with st.container(horizontal=True):
-        render_chat_download(activity, state)
+        render_chat_download(activity, state, participant_code=study_state.get("participant_code") if snapshot else None)
         if intro_files or activity.get("sidebar_reference"):
             st.button("Information", icon="📖", key="open_intro", on_click=open_intro)
         if not intro_pending and not state["completed"] and can_continue:
@@ -275,28 +294,35 @@ with st.container(key="chat_dock"):
         prompt = st.chat_input("Nachricht eingeben...")
 
 if prompt:
-    messages = state["messages"] + [{"role": "user", "content": prompt}]
+    st.session_state.pop("completion_notice", None)
+    user_message = {"role": "user", "content": prompt, "timestamp": utc_timestamp()}
+    messages = state["messages"] + [user_message]
+    model_messages = [{"role": message["role"], "content": message["content"]} for message in messages]
     with st.chat_message("user"):
-        st.markdown(prompt)
+        render_message(user_message, base_path)
     scroll_to_latest()
     try:
         with st.spinner(f"{activity['role']} denkt nach …", show_time=True):
-            with measure("reply_total"):
-                answer = reply(messages, system_prompt(activity, task, state["next_message"]), role=activity["role"])
-                complete = state.get("completion_verified", False) or step_complete(
-                    messages[state.get("step_start", state["task_start"]):],
+            with measure("reply_total"), diagnostic_scope(
+                activity_id=activity.get("activity_id"), task_index=state["task_index"],
+                task_title=task["task_title"], step=state["next_message"], role=activity["role"],
+                step_name=conversation[state["next_message"] - 1].get("step_name") if state["next_message"] else None,
+            ) as diagnostic:
+                answer = reply(model_messages, system_prompt(activity, task, state["next_message"]), role=activity["role"])
+                agent_message = {"role": "assistant", "content": answer, "timestamp": utc_timestamp()}
+                complete = activity["role"] == "AILA" or state.get("completion_verified", False) or step_complete(
+                    model_messages[state.get("step_start", state["task_start"]):],
                     answer, system_prompt(activity, task, state["next_message"]), activity["role"],
                 )
     except (requests.RequestException, KeyError, ValueError, TypeError, FileNotFoundError) as error:
         st.error(error_message(error))
     else:
         updated = deepcopy(state)
-        updated["messages"] = messages + [{"role": "assistant", "content": answer}]
-        updated["answered"] = complete
-        updated["completion_verified"] = complete
-        if complete:
-            advance(updated, task)
+        updated["messages"] = messages + [agent_message]
+        finish_reply(updated, task, activity["role"], complete)
         save_progress(updated)
+        if diagnostic.get("completion_error"):
+            st.session_state.completion_notice = (session_id, diagnostic["completion_error"])
         st.session_state.scroll_to_latest = session_id
         st.rerun()
 

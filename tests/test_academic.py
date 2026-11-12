@@ -21,7 +21,7 @@ class AcademicErrorsTest(unittest.TestCase):
             {"role": "assistant", "content": "Task heading", "type": "bold"},
             {"role": "assistant", "content": "./figures/example.png", "type": "image"},
             {"role": "assistant", "content": "Task question"},
-            {"role": "user", "content": "My answer"},
+            {"role": "user", "content": "My answer", "timestamp": "2026-11-12T09:00:00+00:00"},
         ]
         original = deepcopy(messages)
         response = Mock()

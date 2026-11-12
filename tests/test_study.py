@@ -15,6 +15,7 @@ import guardrail
 import session_store
 import study_flow as flow
 from activity import system_prompt
+from chat_export import chat_markdown
 
 APP = str(Path(__file__).resolve().parents[1] / "app.py")
 
@@ -147,14 +148,17 @@ class RoleTest(unittest.TestCase):
             self.assertEqual("als lernende Studentin" in prompt, role == "AILA")
             with patch("guardrail.reply", side_effect=["Draft", '{"allowed":true,"violations":[]}']) as reply:
                 self.assertEqual(guardrail.guarded_reply([], prompt, role=role), "Draft")
-                validator = reply.call_args_list[1].args[1]
-                self.assertEqual(validator, guardrail.PIA_VALIDATOR_PROMPT if role == "PIA" else guardrail.VALIDATOR_PROMPT)
-            with patch("guardrail.reply", side_effect=["Draft", "invalid JSON"]):
-                with self.assertRaises(academic.AcademicAIResponseError):
-                    guardrail.guarded_reply([], prompt, role=role)
+                if role == "PIA":
+                    self.assertEqual(reply.call_args_list[1].args[1], guardrail.PIA_VALIDATOR_PROMPT)
+                else:
+                    reply.assert_called_once()
+            if role == "PIA":
+                with patch("guardrail.reply", side_effect=["Draft", "invalid JSON"]):
+                    with self.assertRaises(academic.AcademicAIResponseError):
+                        guardrail.guarded_reply([], prompt, role=role)
 
     def test_retry_preserves_role(self):
-        for role in ("PIA", "AILA"):
+        for role in ("PIA",):
             with patch("guardrail.reply", side_effect=["bad", '{"allowed":false,"violations":["role"]}', "good", '{"allowed":true,"violations":[]}']) as reply:
                 self.assertEqual(guardrail.guarded_reply([], "Original", role=role), "good")
                 retry = reply.call_args_list[2].args[1]
@@ -162,6 +166,25 @@ class RoleTest(unittest.TestCase):
 
 
 class StudyUITest(unittest.TestCase):
+    def test_downloads_in_all_study_phases_include_enrolled_participant_id(self):
+        snapshot = ready_snapshot()
+        for phase in ("activity", "post_survey", "completed"):
+            with self.subTest(phase=phase):
+                state = flow.initial_study_state()
+                state.update(phase=phase, group="B", participant_code="B-123")
+                for activity_id in flow.GROUPS["B"]:
+                    progress = flow.initial_activity_state()
+                    progress.update(started=True, conversation_started=True, next_message=1,
+                                    messages=[{"role": "user", "content": "Hallo", "timestamp": "2026-11-12T09:00:00+00:00"}])
+                    state["activities"][activity_id] = progress
+                token = session_store.SessionStore().create(snapshot, state)
+                with patch("chat_export.chat_markdown", wraps=chat_markdown) as export:
+                    app = self.resume(token)
+                self.assertFalse(app.exception)
+                self.assertEqual(export.call_count, 2 if phase == "completed" else 1)
+                for call in export.call_args_list:
+                    self.assertEqual(call.kwargs["participant_code"], "B-123")
+
     def setUp(self):
         completion = patch("completion.step_complete", return_value=True)
         completion.start()

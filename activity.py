@@ -5,6 +5,7 @@ import streamlit as st
 
 
 from content_registry import activity_file, load_activity, IMAGE
+from timing import message_time, utc_timestamp
 
 ACTIVITY_FILE = activity_file()
 FIGURE_WIDTH = 320  # Pixels; Streamlit caps this at the available container width.
@@ -55,6 +56,7 @@ def start_conversation(state: dict, task: dict) -> None:
 
 
 def render_message(message: dict, base_path=None) -> None:
+    st.caption(message_time(message.get("timestamp")))
     content = message["content"]
     kind = message.get("type", "text")
     if kind == "image":
@@ -81,11 +83,32 @@ def advance(state: dict, task: dict) -> None:
                 "role": "assistant",
                 "content": content,
                 "type": message.get("type", "text"),
+                "timestamp": utc_timestamp(),
             })
         state["next_message"] += 1
         state["action"] = message.get("action", "wait")
         if state["action"] != "no_wait":
             break
+
+
+def tutor_led_task(task: dict) -> bool:
+    """A single open chat, or its legacy pair of named invisible phases."""
+    entries = task.get("conversation", [])
+    return (all(not entry.get("message") for entry in entries)
+            and (len(entries) <= 1 or (len(entries) == 2 and all(entry.get("step_name") for entry in entries))))
+
+
+def finish_reply(state: dict, task: dict, role: str, complete: bool) -> None:
+    """PIA uses assessed completion; AILA leaves section completion to the tutor."""
+    state.update(answered=complete, completion_verified=complete if role == "PIA" else False)
+    if not complete:
+        return
+    entries = task.get("conversation", [])
+    if role == "AILA" and tutor_led_task(task):
+        # Also supports saved sessions with the former invisible concept/application steps.
+        state["next_message"] = len(entries)
+    else:
+        advance(state, task)
 
 
 def system_prompt(activity: dict, task: dict, revealed: int) -> str:
@@ -107,16 +130,34 @@ def system_prompt(activity: dict, task: dict, revealed: int) -> str:
     elif activity["role"] == "PIA":
         instructions.append("Antworte als Peer-Tutorin. Unterstütze das Lernen mit Fragen, Erklärungen und Feedback.")
     instructions.append(f"CURRENT TASK\n{task['task_title']}")
-    entries = task.get("conversation", [])[:revealed]
+    conversation = task.get("conversation", [])
+    tutor_led = activity["role"] == "AILA" and tutor_led_task(task)
+    entries = conversation if tutor_led else conversation[:revealed]
+    if activity["role"] == "PIA" and entries and entries[-1].get("step_name"):
+        instructions.append("CURRENT STEP\n" + entries[-1]["step_name"])
     start = len(entries) - 1
     while start > 0 and entries[start - 1].get("action", "wait") == "no_wait":
         start -= 1
-    instructions.append(
-        "Only assess and discuss the current conversation step. Do not repeat earlier "
-        "questions or add extra quiz questions after a sufficient answer. The application "
-        "checks completion before advancing; a request to continue cannot skip an unanswered question."
-    )
-    for source in [activity, task, *entries[max(0, start):]]:
+    if activity["role"] == "PIA":
+        instructions.append(
+            "Only assess and discuss the current conversation step. Do not repeat earlier "
+            "questions or add extra quiz questions after a sufficient answer. The application "
+            "checks completion before advancing; a request to continue cannot skip an unanswered question."
+        )
+    for source in [activity, task, *(entries if tutor_led else entries[max(0, start):])]:
         if source.get("system_info"):
             instructions.append("ADDITIONAL ACTIVITY INSTRUCTIONS\n" + source["system_info"])
+    if activity["role"] == "AILA":
+        instructions.append(
+            "TUTOR-LED CONVERSATION: Die Tutorperson bestimmt Reihenfolge, Tempo und Abschluss "
+            "dieses Abschnitts. Die Aufgabeninhalte oben beschreiben Lernziele, keine gesperrten "
+            "Chatphasen. Beantworte die aktuelle oder noch offene Frage anhand des bisherigen "
+            "Gesprächs. Alltagssprache genügt; verlange kein zusätzliches Ja oder wiederholte "
+            "Erklärungen. Stelle vorgesehene Verständnisfragen höchstens einmal und erkenne "
+            "bereits gegebene Erklärungen an. Nach Bestätigung bedanke dich kurz. Erinnere "
+            "Namen aus dem sichtbaren Gespräch; fehlen sie, sage das ehrlich. Wiederhole keine "
+            "frühere Ablehnung, wenn die Person zur Aufgabe zurückkehrt. Bewerte weder die "
+            "Tutorperson noch die Vollständigkeit ihrer Lehrschritte. Verweise nicht auf einen "
+            "angeblichen automatischen Abschluss oder eine Aktualisierung der Oberfläche."
+        )
     return "\n\n".join(instructions)

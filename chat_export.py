@@ -5,13 +5,18 @@ import re
 import streamlit as st
 
 from content_registry import IMAGE
+from timing import message_time
 
 
-def chat_markdown(activity, state):
+def chat_markdown(activity, state, participant_code=None):
     role = activity.get("role", "Assistant")
+    participant = participant_code or state.get("participant_code") or "Nicht hinterlegt"
+    participant = " ".join(str(participant).splitlines())
     lines = [f"# {activity.get('activity_name', 'Chat')}", "",
              f"Agent: {role}", "",
+             f"Studienteilnehmer-ID: {participant}", "",
              f"Exportiert (UTC): {datetime.now(timezone.utc).isoformat(timespec='seconds')}", "",
+             "Zeitzone der Nachrichten: Europe/Vienna (CET/CEST)", "",
              "Abbildungen werden als Textverweise exportiert.", ""]
     markers = {}
     for marker in state.get("task_markers", []):
@@ -32,15 +37,15 @@ def chat_markdown(activity, state):
             content = IMAGE.sub(lambda match: f"_Abbildung: {match.group(1) or 'Bild'}_", content)
             if message.get("type") == "bold":
                 content = f"**{content}**"
-        lines.extend([f"**{speaker}:**", "", content, ""])
+        lines.extend([f"**{speaker}:** _{message_time(message.get('timestamp'))}_", "", content, ""])
     return "\n".join(lines).rstrip() + "\n"
 
 
-def render_chat_download(activity, state, key="download_chat"):
+def render_chat_download(activity, state, key="download_chat", *, participant_code=None):
     filename = re.sub(r"[^a-zA-Z0-9_-]", "_", activity.get("activity_id", "chat"))
     st.download_button(
         "Chat herunterladen",
-        data=chat_markdown(activity, state).encode("utf-8"),
+        data=chat_markdown(activity, state, participant_code=participant_code).encode("utf-8"),
         file_name=f"{filename}_chat.md", mime="text/markdown; charset=utf-8",
         key=key, on_click="ignore", disabled=not state.get("messages"),
     )
