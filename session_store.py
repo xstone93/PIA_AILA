@@ -1,10 +1,13 @@
 """Local persistence for activity sessions; no API credentials are stored."""
 from contextlib import contextmanager
+from copy import deepcopy
 import json
 import re
 import secrets
 import sqlite3
 from pathlib import Path
+
+from app_version import APP_VERSION
 
 
 DB_PATH = Path(__file__).parent / "data" / "sessions.sqlite3"
@@ -46,10 +49,15 @@ class SessionStore:
 
     def create(self, activity, state):
         session_id = secrets.token_urlsafe(32)
+        snapshot = deepcopy(activity)
+        snapshot["app_version"] = APP_VERSION
+        if snapshot.get("kind") == "study":
+            for content in snapshot.get("activities", {}).values():
+                content["app_version"] = APP_VERSION
         with self.connect() as connection:
             connection.execute(
                 "INSERT INTO sessions (id, activity, state, study_group, participant_code, study_version) VALUES (?, ?, ?, ?, ?, ?)",
-                (session_id, json.dumps(activity), json.dumps(state), state.get("group"),
+                (session_id, json.dumps(snapshot), json.dumps(state), state.get("group"),
                  state.get("participant_code"), state.get("study_version")),
             )
         return session_id

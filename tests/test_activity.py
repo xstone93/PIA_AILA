@@ -33,7 +33,7 @@ class ActivityFlowTest(unittest.TestCase):
     def test_activity_flow(self):
         fixture = deepcopy(load_activity())
         fixture["tasks"] = fixture["tasks"][:2]
-        fixture["tasks"][1]["intro_sequence"] = ["robot_and_battery_01.md", "robot_and_battery_02.md"]
+        fixture["tasks"][1]["intro_sequence"] = fixture["tasks"][1]["intro_sequence"][:2]
         fixture["tasks"][1]["conversation"] = [
             {"message": "Bereite dich vor", "type": "bold", "action": "no_wait"},
             {"message": "./figures/intro_robot_small.png", "type": "image", "action": "no_wait"},
@@ -95,7 +95,7 @@ class ActivityFlowTest(unittest.TestCase):
             self.assertEqual(app.session_state["activity_state"]["task_index"], 0)
             app.button(key="confirm_next_task_yes").click().run()
             self.assertFalse(app.exception)
-            self.assertEqual(app.sidebar.subheader[0].value, "Problemformulierung")
+            self.assertEqual(app.sidebar.header[0].value, "Problemformulierung")
             self.assertEqual(len(app.chat_input), 0)
             self.assertEqual(len(app.chat_message), 3)
             self.assertEqual(len(app.expander), 3)
@@ -193,7 +193,7 @@ class ActivityFlowTest(unittest.TestCase):
         return app.run()
 
     def test_single_intro_and_legacy_sessions(self):
-        files = ["robot_and_battery_02.md"]
+        files = [load_activity()["tasks"][1]["intro_sequence"][0]]
         app = self.task_view(files)
         self.assertFalse(app.exception)
         self.assertEqual(len(app.chat_input), 0)
@@ -234,7 +234,7 @@ class ActivityFlowTest(unittest.TestCase):
     def test_user_initiates_after_intro_and_hidden_context_reaches_model(self):
         activity = deepcopy(load_activity())
         task = activity["tasks"][1]
-        task["intro_sequence"] = ["robot_and_battery_02.md"]
+        task["intro_sequence"] = [activity["tasks"][1]["intro_sequence"][0]]
         task["conversation"] = [{"system_info": "Listen to the learner explanation."}]
         state = {"started": True, "task_index": 1, "messages": []}
         enter_task(state, task)

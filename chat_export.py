@@ -6,6 +6,7 @@ import streamlit as st
 
 from content_registry import IMAGE
 from timing import message_time, show_message_timestamp
+from app_version import APP_VERSION, version_label
 
 
 def chat_markdown(activity, state, participant_code=None):
@@ -14,6 +15,8 @@ def chat_markdown(activity, state, participant_code=None):
     participant = " ".join(str(participant).splitlines())
     lines = [f"# {activity.get('activity_name', 'Chat')}", "",
              f"Agent: {role}", "",
+             f"Softwareversion beim Sitzungsstart: {version_label(activity.get('app_version'))}", "",
+             f"Exportiert mit Softwareversion: {APP_VERSION}", "",
              f"Studienteilnehmer-ID: {participant}", "",
              f"Exportiert (UTC): {datetime.now(timezone.utc).isoformat(timespec='seconds')}", "",
              "Zeitzone der Nachrichten: Europe/Vienna (CET/CEST)", "",
@@ -39,7 +42,7 @@ def chat_markdown(activity, state, participant_code=None):
                 content = f"**{content}**"
         previous = messages[index - 1] if index and index not in markers else None
         if show_message_timestamp(message, previous):
-            lines.extend([f"**{speaker}:** _{message_time(message.get('timestamp'))}_", ""])
+            lines.extend([f"**{speaker}:** _{message_time(message.get('timestamp'))}_ · Version: {version_label(message.get('app_version'))}", ""])
         lines.extend([content, ""])
     return "\n".join(lines).rstrip() + "\n"
 

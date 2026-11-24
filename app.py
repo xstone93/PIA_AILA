@@ -25,10 +25,12 @@ from chat_export import render_chat_download
 from completion import step_complete, ASSESSMENT_VERSION
 from diagnostics import diagnostic_scope
 from pia_context import reply_context, remember_completed_step
+from app_version import APP_VERSION, version_label
 
 
 st.set_page_config(page_title="Learn Computational Thinking", layout="wide",
                    initial_sidebar_state="collapsed" if "sidebar_task" not in st.session_state else None)
+st.caption(f"PIA / AILA · Softwareversion {APP_VERSION}")
 preview_mode = st.query_params.get("preview") == "1"
 
 try:
@@ -52,6 +54,9 @@ except (ValueError, LookupError):
 except (OSError, sqlite3.Error):
     st.error("Der Sitzungsspeicher ist momentan nicht erreichbar. Bitte versuche es erneut.")
     st.stop()
+
+if activity.get("app_version") != APP_VERSION:
+    st.caption("Softwareversion beim Sitzungsstart: " + version_label(activity.get("app_version")))
 
 snapshot = activity if activity.get("kind") == "study" else None
 study_state = state if snapshot else None
@@ -299,7 +304,7 @@ with st.container(key="chat_dock"):
 
 if prompt:
     st.session_state.pop("completion_notice", None)
-    user_message = {"role": "user", "content": prompt, "timestamp": utc_timestamp()}
+    user_message = {"role": "user", "content": prompt, "timestamp": utc_timestamp(), "app_version": APP_VERSION}
     messages = state["messages"] + [user_message]
     model_messages = [{"role": message["role"], "content": message["content"]} for message in messages]
     with st.chat_message("user"):
@@ -337,7 +342,7 @@ if prompt:
                         "technical_failure": bool(diagnostic.get("completion_error")),
                     }, ensure_ascii=False)
                 answer = reply(reply_messages, context, role=activity["role"])
-                agent_message = {"role": "assistant", "content": answer, "timestamp": utc_timestamp()}
+                agent_message = {"role": "assistant", "content": answer, "timestamp": utc_timestamp(), "app_version": APP_VERSION}
     except (requests.RequestException, KeyError, ValueError, TypeError, FileNotFoundError) as error:
         st.error(error_message(error))
     else:

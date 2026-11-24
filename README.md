@@ -23,6 +23,21 @@ python -m unittest discover -s tests -v
 
 Model requests require `ACADEMIC_AI_CLIENT_ID` and `ACADEMIC_AI_CLIENT_SECRET` in `.streamlit/secrets.toml`. Tests mock model calls and use temporary databases.
 
+### Software version
+
+`app_version.py` contains the central `APP_VERSION` (initially `0.1.0`). Increment
+it for each software release: patch for fixes, minor for new features, major for
+incompatible changes. Restart the deployed Streamlit process after a version bump.
+The current version is shown in the app, including previews
+and study pages. This is independent of `study/config.json` and `ASSESSMENT_VERSION`.
+
+New session snapshots record their starting software version; each newly recorded
+message also carries its software version, so chats continued after an update
+remain traceable. Markdown exports include the session-start version, the export
+software version, and each message/batch version. Older records without version
+metadata show `Nicht erfasst`; their versions are never retroactively guessed.
+No database schema migration is required, and learning activity files are unchanged.
+
 ### Test an individual activity or chat
 
 Open `http://localhost:8501/?preview=1` (use your running server's port). Choose an activity and either **Gesamte Aktivität** or a numbered section, then click **Chat starten**. Individual sections start with fresh chat history and retain their information pages; they skip enrollment, questionnaires and earlier sections. Only complete, validated activities are offered. Replies use the normal model and guardrails.

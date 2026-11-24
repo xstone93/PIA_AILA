@@ -19,6 +19,7 @@ APP = str(Path(__file__).resolve().parents[1] / "app.py")
 
 class CompletionTest(unittest.TestCase):
     def setUp(self):
+        self.intro_page = load_activity()["tasks"][1]["intro_sequence"][0]
         completion = patch("completion.step_complete", return_value=True)
         completion.start()
         self.addCleanup(completion.stop)
@@ -46,7 +47,7 @@ class CompletionTest(unittest.TestCase):
         return app.run()
 
     def test_intro_only_completion_saved_and_celebrates_once(self):
-        app = self.create_app({"task_title": "Last task", "intro_sequence": ["robot_and_battery_02.md"]})
+        app = self.create_app({"task_title": "Last task", "intro_sequence": [self.intro_page]})
         self.assertFalse(app.exception)
         self.assertEqual(app.button(key="confirm_intro").label, "Fertig")
         self.assertFalse(app.chat_input)
@@ -75,7 +76,7 @@ class CompletionTest(unittest.TestCase):
 
     def test_intermediate_intro_only_advances_without_chat(self):
         app = self.create_app(
-            {"task_title": "Instructions", "intro_sequence": ["robot_and_battery_02.md"], "conversation": []},
+            {"task_title": "Instructions", "intro_sequence": [self.intro_page], "conversation": []},
             [{"task_title": "Next task", "conversation": [{"system_info": "Wait for user"}]}],
         )
         self.assertFalse(app.button(key="confirm_intro").disabled)
@@ -144,10 +145,10 @@ class CompletionTest(unittest.TestCase):
     def test_sidebar_keeps_chat_visible_and_information_toggles(self):
         import presentation
         with patch("presentation.control_sidebar") as sidebar:
-            app = self.create_app({"task_title": "Task", "intro_sequence": ["robot_and_battery_02.md"],
+            app = self.create_app({"task_title": "Task", "intro_sequence": [self.intro_page],
                                    "conversation": [{"system_info": "Wait"}]})
             sidebar.assert_called_with("open")
-            self.assertEqual(len(app.sidebar.subheader), 1)
+            self.assertEqual(len(app.sidebar.header), 1)
             self.assertEqual(len(app.main.chat_message), 2)
             self.assertFalse(app.chat_input)
             app.button(key="confirm_intro").click().run()

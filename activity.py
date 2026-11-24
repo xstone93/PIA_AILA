@@ -6,6 +6,7 @@ import streamlit as st
 
 from content_registry import activity_file, IMAGE
 from timing import message_time, utc_timestamp
+from app_version import APP_VERSION
 
 ACTIVITY_FILE = activity_file()
 FIGURE_WIDTH = 320  # Pixels; Streamlit caps this at the available container width.
@@ -98,6 +99,7 @@ def advance(state: dict, task: dict) -> None:
                 "type": message.get("type", "text"),
                 "timestamp": timestamp,
                 "script_batch": batch,
+                "app_version": APP_VERSION,
             })
         state["next_message"] += 1
         state["action"] = message.get("action", "wait")
