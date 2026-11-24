@@ -48,7 +48,7 @@ class StepCompletionTest(unittest.TestCase):
     def test_navigation_alone_never_completes_pia(self):
         for role in ("PIA",):
             with self.subTest(role=role), patch("completion.reply") as request:
-                self.assertFalse(step_complete([{"role": "user", "content": "weiter"}], "Weiter!", "Task", role))
+                self.assertFalse(step_complete([{"role": "user", "content": "weiter"}], "Task", role))
                 request.assert_not_called()
 
     def test_invalid_decisions_and_service_errors_keep_step_open(self):
@@ -59,20 +59,24 @@ class StepCompletionTest(unittest.TestCase):
                     request.side_effect = result
                 else:
                     request.return_value = result
-                self.assertFalse(step_complete([{"role": "user", "content": "Antwort"}], "Feedback", "Task", "PIA"))
+                self.assertFalse(step_complete([{"role": "user", "content": "Antwort"}], "Task", "PIA"))
 
     def test_role_and_current_step_history_reach_completion_check(self):
         for role in ("PIA",):
             for complete in (True, False):
                 with self.subTest(role=role, complete=complete), patch(
-                    "completion.reply", return_value=json.dumps({"step_complete": complete})
+                    "completion.reply", return_value=json.dumps({"reason": "Test", "criteria": [{
+                        "id": "answer", "requirement": "Current criteria",
+                        "status": "met" if complete else "missing", "evidence": [0] if complete else [],
+                    }]})
                 ) as request:
                     history = [{"role": "user", "content": "Meine Überlegung"}]
-                    self.assertIs(step_complete(history, "Feedback", "Current criteria", role), complete)
+                    self.assertIs(step_complete(history, "Current criteria", role), complete)
                     payload = json.loads(request.call_args.args[0][0]["content"])
                     self.assertEqual(payload["role"], role)
                     self.assertEqual(payload["conversation"], history)
                     self.assertEqual(payload["current_step_context"], "Current criteria")
+                    self.assertNotIn("agent_reply", payload)
 
     def test_prior_step_answer_key_is_not_reused(self):
         task = {"task_title": "Muster", "conversation": [

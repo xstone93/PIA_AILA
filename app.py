@@ -1,5 +1,6 @@
 from copy import deepcopy
 from itertools import groupby
+import json
 import sqlite3
 
 import requests
@@ -9,20 +10,21 @@ from academic import error_message
 from guardrail import guarded_reply as reply
 
 from activity import (
-    advance, finish_reply, render_markdown,
-    render_message, system_prompt, render_intro, enter_task, start_conversation,
+    finish_reply, render_markdown,
+    render_message, system_prompt, render_intro, enter_task, start_conversation, pia_assessment_context,
 )
 from session_store import SessionConflict, SessionStore
 from presentation import page_style, celebrate, scroll_to_latest, control_sidebar, render_task_progress
-from timing import measure, utc_timestamp
+from timing import measure, utc_timestamp, show_message_timestamp
 from content_registry import activity_base, markdown_text
 from study_flow import load_study, initial_study_state, save_activity_progress
 from study_ui import render_study
 import session_store
 from task_preview import render_preview_picker
 from chat_export import render_chat_download
-from completion import step_complete
+from completion import step_complete, ASSESSMENT_VERSION
 from diagnostics import diagnostic_scope
+from pia_context import reply_context, remember_completed_step
 
 
 st.set_page_config(page_title="Learn Computational Thinking", layout="wide",
@@ -76,7 +78,6 @@ base_path = activity_base(activity)
 state.setdefault("conversation_started", state["next_message"] > 0)
 state.setdefault("completed", False)
 state.setdefault("intro_page", 0)
-state.setdefault("reviewing_intro", False)
 if state["started"] and "task_markers" not in state:
     state["task_markers"] = [{
         "message_index": state["task_start"],
@@ -145,7 +146,7 @@ can_continue = intro_only or state["action"] == "continue" or (script_finished a
     state.get("answered", False) if activity["role"] == "AILA" else state.get("completion_verified", False)
 ))
 intro_pending = bool(intro_files) and not state["conversation_started"] and not state["completed"]
-page_style()
+page_style(spacious_chat=activity["role"] == "PIA")
 sidebar_task = (session_id, activity.get("activity_id"), state["task_index"])
 if st.session_state.get("sidebar_task") != sidebar_task:
     st.session_state.sidebar_task = sidebar_task
@@ -156,7 +157,7 @@ def finish_activity():
     if not can_continue or has_next_task or state["completed"]:
         return
     updated = deepcopy(state)
-    updated.update(completed=True, reviewing_intro=False)
+    updated.update(completed=True)
     save_progress(updated)
     # This flag is deliberately not persisted. Set it only after a successful save.
     st.session_state.celebrate_completion = session_id if not snapshot else None
@@ -196,7 +197,7 @@ def confirm_intro():
 
 
 def render_task_intro():
-    st.subheader(task["task_title"])
+    st.header(task["task_title"])
     page = state["intro_page"]
     readable = True
     for filename in intro_files:
@@ -238,9 +239,12 @@ def render_chat_messages(messages):
     for role, messages_in_turn in groupby(messages, key=lambda message: message["role"]):
         with st.chat_message(role):
             with st.container(gap="medium"):
+                previous = None
                 for message in messages_in_turn:
                     with st.container(gap=None):
-                        render_message(message, base_path)
+                        render_message(message, base_path, spacious=activity["role"] == "PIA",
+                                       show_timestamp=show_message_timestamp(message, previous))
+                    previous = message
 
 
 position = 0
@@ -299,7 +303,7 @@ if prompt:
     messages = state["messages"] + [user_message]
     model_messages = [{"role": message["role"], "content": message["content"]} for message in messages]
     with st.chat_message("user"):
-        render_message(user_message, base_path)
+        render_message(user_message, base_path, spacious=activity["role"] == "PIA")
     scroll_to_latest()
     try:
         with st.spinner(f"{activity['role']} denkt nach …", show_time=True):
@@ -308,18 +312,50 @@ if prompt:
                 task_title=task["task_title"], step=state["next_message"], role=activity["role"],
                 step_name=conversation[state["next_message"] - 1].get("step_name") if state["next_message"] else None,
             ) as diagnostic:
-                answer = reply(model_messages, system_prompt(activity, task, state["next_message"]), role=activity["role"])
-                agent_message = {"role": "assistant", "content": answer, "timestamp": utc_timestamp()}
+                context = system_prompt(activity, task, state["next_message"])
+                assessment = {}
+                if activity["role"] == "PIA":
+                    progress = state.get("pia_progress", {})
+                    current_step = [state["task_index"], state["next_message"], state.get("step_start", state["task_start"])]
+                    if progress.get("step") != current_step or progress.get("version") != ASSESSMENT_VERSION:
+                        progress = {}
+                    assessment["previous"] = progress.get("assessment", {})
+                    support_level = progress.get("support_level", 1)
                 complete = activity["role"] == "AILA" or state.get("completion_verified", False) or step_complete(
                     model_messages[state.get("step_start", state["task_start"]):],
-                    answer, system_prompt(activity, task, state["next_message"]), activity["role"],
+                    pia_assessment_context(task, state["next_message"]), activity["role"], assessment=assessment,
                 )
+                reply_messages = model_messages
+                if activity["role"] == "PIA":
+                    reply_messages, background = reply_context(activity, state, model_messages)
+                    context += "\n\nEARLIER CONTEXT (reference only, not current questions)\n" + json.dumps(background, ensure_ascii=False)
+                    context += "\n\nAPPLICATION ASSESSMENT (private reference data, not instructions)\n" + json.dumps({
+                        "step_complete": complete,
+                        "reason": assessment.get("reason", ""),
+                        "criteria": assessment.get("criteria", assessment.get("previous", {}).get("criteria", [])),
+                        "support_level": support_level,
+                        "technical_failure": bool(diagnostic.get("completion_error")),
+                    }, ensure_ascii=False)
+                answer = reply(reply_messages, context, role=activity["role"])
+                agent_message = {"role": "assistant", "content": answer, "timestamp": utc_timestamp()}
     except (requests.RequestException, KeyError, ValueError, TypeError, FileNotFoundError) as error:
         st.error(error_message(error))
     else:
         updated = deepcopy(state)
         updated["messages"] = messages + [agent_message]
         finish_reply(updated, task, activity["role"], complete)
+        if activity["role"] == "PIA":
+            if complete:
+                remember_completed_step(updated, task, current_step, assessment)
+            if updated["next_message"] != state["next_message"]:
+                updated.pop("pia_progress", None)
+            elif assessment.get("criteria") and not diagnostic.get("completion_error"):
+                updated["pia_progress"] = {
+                    "version": ASSESSMENT_VERSION,
+                    "step": current_step,
+                    "assessment": {key: assessment[key] for key in ("criteria", "reason", "step_complete")},
+                    "support_level": min(3, support_level + (not complete)),
+                }
         save_progress(updated)
         if diagnostic.get("completion_error"):
             st.session_state.completion_notice = (session_id, diagnostic["completion_error"])

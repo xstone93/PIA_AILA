@@ -99,6 +99,8 @@ class AilaRobotContentTest(unittest.TestCase):
             app.query_params["preview"] = "1"
             app.query_params["session"] = token
             app.run()
+            for _ in content["tasks"][0].get("intro_sequence", [])[1:]:
+                app.button(key="intro_next").click().run()
             app.button(key="confirm_intro").click().run()
             exchanges = [
                 ("Ein Muster ist etwas Regelmäßiges, das immer wieder kommt.", "Ich verstehe, danke!"),

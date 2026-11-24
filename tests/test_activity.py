@@ -11,7 +11,8 @@ from streamlit.testing.v1 import AppTest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import academic
 import session_store
-from activity import ACTIVITY_FILE, IMAGE, advance, load_activity, system_prompt, enter_task, start_conversation
+from activity import ACTIVITY_FILE, IMAGE, advance, system_prompt, enter_task, start_conversation
+from content_registry import load_activity
 
 
 class ActivityFlowTest(unittest.TestCase):
@@ -38,9 +39,6 @@ class ActivityFlowTest(unittest.TestCase):
             {"message": "./figures/intro_robot_small.png", "type": "image", "action": "no_wait"},
             {"message": "Problemformulierung"},
         ]
-        patcher = patch("activity.load_activity", return_value=fixture)
-        patcher.start()
-        self.addCleanup(patcher.stop)
         app_path = Path(__file__).resolve().parents[1] / "app.py"
         from study_flow import initial_activity_state
         token = session_store.SessionStore().create(fixture, initial_activity_state())
@@ -120,7 +118,7 @@ class ActivityFlowTest(unittest.TestCase):
             self.assertEqual(timeline, ["subheader", "chat_message", "chat_message",
                                         "chat_message", "subheader", "chat_message"])
             self.assertTrue(any(m.value.startswith("**") for m in app.markdown))
-            self.assertTrue(any("Ich bin Alex." in m.value for m in app.markdown))
+            self.assertTrue(any("Ich bin Alex." in m.value for m in app.text))
             self.assertEqual(app.session_state["activity_state"]["task_index"], 1)
             self.assertEqual(len(app.main.get("imgs")), 1)
             self.assertEqual(len(app.chat_input), 1)
@@ -168,7 +166,7 @@ class ActivityFlowTest(unittest.TestCase):
             self.assertEqual([h.value for h in resumed.main.subheader],
                              ["Willkommen!", "Problemformulierung"])
             self.assertEqual(len(resumed.chat_message), 6)
-            self.assertTrue(any("Ich bin Alex." in m.value for m in resumed.markdown))
+            self.assertTrue(any("Ich bin Alex." in m.value for m in resumed.text))
             self.assertEqual(resumed.session_state["activity_state"], app.session_state["activity_state"])
 
             self.assertEqual(len(app.chat_input), 1)

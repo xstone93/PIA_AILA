@@ -4,6 +4,7 @@ import streamlit as st
 
 from activity import render_markdown, render_message
 from content_registry import activity_base
+from timing import show_message_timestamp
 from chat_export import render_chat_download
 from study_flow import (STUDY_ROOT, enroll, readiness_errors, checkpoint_key,
                         confirm_checkpoint, current_activity_id)
@@ -68,9 +69,12 @@ def render_study(snapshot, state, save):
             with st.expander(f"{activity['role']} · {activity['activity_name']}"):
                 render_chat_download(activity, progress, key=f"download_{activity_id}",
                                      participant_code=state.get("participant_code"))
+                previous = None
                 for message in progress["messages"]:
                     with st.chat_message(message["role"]):
-                        render_message(message, activity_base(activity))
+                        render_message(message, activity_base(activity),
+                                       show_timestamp=show_message_timestamp(message, previous))
+                    previous = message
     else:
         st.error("Unbekannter Studienstatus. Bitte wende dich an die Studienleitung.")
     st.stop()

@@ -1,4 +1,3 @@
-import json
 import unittest
 from unittest.mock import patch
 
@@ -9,7 +8,6 @@ import guardrail
 class ReplyFlowTest(unittest.TestCase):
     def test_aila_uses_one_generation_request_without_classification(self):
         for text, answer in (
-            ("Ja, genau.", "Danke!"),
             ("Das habe ich dir schon erklärt.", "Die Gesamtdistanz ist zweimal die Anzahl der Verbindungslinien."),
             ("Wie heiße ich?", "Du heißt Alex."),
         ):
@@ -20,6 +18,20 @@ class ReplyFlowTest(unittest.TestCase):
                 self.assertEqual(request.call_args.args[0], messages)
                 self.assertIn("Current task", request.call_args.args[1])
                 self.assertIn(guardrail.TASK_SCOPE, request.call_args.args[1])
+
+    def test_aila_plain_confirmation_and_navigation_never_generate_content(self):
+        for text, answer in (("perfekt", "Danke!"), ("Ja, genau.", "Danke!"),
+                             ("weiter", "Zum Weitergehen kannst du die Navigation der Oberfläche verwenden.")):
+            with self.subTest(text=text), patch("guardrail.reply") as request:
+                history = [{"role": "assistant", "content": "Die Formel ist D = 2V."},
+                           {"role": "user", "content": text}]
+                self.assertEqual(guardrail.guarded_reply(history, role="AILA"), answer)
+                request.assert_not_called()
+
+    def test_aila_mixed_confirmation_with_question_still_uses_model(self):
+        with patch("guardrail.reply", return_value="Weil jede Linie zweimal befahren wird.") as request:
+            guardrail.guarded_reply([{"role": "user", "content": "Perfekt. Warum gilt das?"}], role="AILA")
+        request.assert_called_once()
 
     def test_aila_service_failure_is_not_mislabeled_as_role_rejection(self):
         with patch("guardrail.reply", side_effect=AcademicAIResponseError("Empty response")):

@@ -16,7 +16,7 @@
                     "system_info": "Warte auf die Rückmeldung des Users."
                 },
                 {
-                    "message": "Freut mich dich kennenzulernen. Wenn du bereit bist, klicke auf 'Weiter zum nächsten Thema', um die Lernsession zu starten.",
+                    "system_info": "Teile dem Benutzer mit, dass du dich freust die Personen kennenzulernen (nenne dabei den Namen). Sage der Person: Wenn du bereit bist, klicke auf 'Weiter zum nächsten Thema', um die Lernsession zu starten.",
                     "action": "continue"
                 }
             ]
@@ -25,8 +25,8 @@
             "task_name": "Problemformulierung",
             "task_title": "Problemformulierung",
             "intro_sequence": [
-                "robot_and_battery_01.md",
-                "robot_and_battery_02.md"
+                "robot_and_battery_01a.md",
+                "robot_and_battery_01b.md"
             ],
             "conversation": [
                 {
@@ -38,8 +38,8 @@
             "task_name": "Dekomposition",
             "task_title": "Dekomposition",
             "intro_sequence": [
-                "robot_and_battery_04.md",
-                "robot_and_battery_05.md"
+                "robot_and_battery_02a.md",
+                "robot_and_battery_02b.md"
             ],
             "conversation": [
                 {
@@ -51,9 +51,8 @@
             "task_name": "Verbindungslinien zählen und die Gesamtdistanz berechnen",
             "task_title": "Verbindungslinien zählen und die Gesamtdistanz berechnen",
             "intro_sequence": [
-                "robot_and_battery_07.md",
-                "robot_and_battery_08.md",
-                "robot_and_battery_09.md"
+                "robot_and_battery_03a.md",
+                "robot_and_battery_03b.md"
             ],
             "conversation": [
                 {
@@ -65,9 +64,8 @@
             "task_name": "Muster erkennen",
             "task_title": "Muster erkennen",
             "intro_sequence": [
-                "robot_and_battery_10.md",
-                "robot_and_battery_11.md",
-                "robot_and_battery_12.md"
+                "robot_and_battery_04a.md",
+                "robot_and_battery_04b.md"
             ],
             "conversation": [
                 {
@@ -79,7 +77,8 @@
             "task_name": "Verbindungslinien-Formel",
             "task_title": "Verbindungslinien-Formel",
             "intro_sequence": [
-                "robot_and_battery_13.md"
+                "robot_and_battery_05a.md",
+                "robot_and_battery_05b.md"
             ],
             "conversation": [
                 {
@@ -91,7 +90,8 @@
             "task_name": "Knoten und Verbindungslinien",
             "task_title": "Knoten und Verbindungslinien",
             "intro_sequence": [
-                "robot_and_battery_14.md"
+                "robot_and_battery_06a.md",
+                "robot_and_battery_06b.md"
             ],
             "conversation": [
                 {
@@ -103,7 +103,8 @@
             "task_name": "Knoten-Formel",
             "task_title": "Knoten-Formel",
             "intro_sequence": [
-                "robot_and_battery_15.md"
+                "robot_and_battery_07a.md",
+                "robot_and_battery_07b.md"
             ],
             "conversation": [
                 {
@@ -115,7 +116,8 @@
             "task_name": "Überprüfung beider Formeln",
             "task_title": "Überprüfung beider Formeln",
             "intro_sequence": [
-                "robot_and_battery_16.md"
+                "robot_and_battery_08a.md",
+                "robot_and_battery_08b.md"
             ],
             "conversation": [
                 {

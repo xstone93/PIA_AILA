@@ -1,4 +1,4 @@
-# Information
+### Information
 
 **Bereite dich vor, damit du später AILA alles gut erklären kannst**
 
@@ -8,6 +8,8 @@ Wir haben zwei Formeln zur Berechnung der Gesamtdistanz kennengelernt:
 - Knoten-Formel: D = 2 × (K − 1)
 
 ![Beispielbaum mit drei Batterien, fünf Knoten und vier Verbindungslinien](figures/example_four_connections.png){width=400}
+
+---
 
 Überlege dir zunächst, wie du die Fragen beantworten würdest. Klicke auf die Fragen, um die Lösungen zu erhalten.
 
@@ -28,21 +30,3 @@ Wir haben zwei Formeln zur Berechnung der Gesamtdistanz kennengelernt:
 **Warum ist dieses Wissen wichtig? Wo kann man es einsetzen?**
 
 Die Aufgaben gehören zur Graphentheorie. Graphen bestehen aus Knoten und Verbindungen und bilden Netzwerke und Beziehungen ab. Solche Modelle werden bei Wander- und Verkehrsrouten, in der Logistik und Lieferplanung sowie beim Transport von Waren durch Roboter eingesetzt. In der Psychologie helfen Netzwerke beispielsweise, soziale Beziehungen oder Zusammenhänge zwischen psychologischen Merkmalen und Symptomen zu untersuchen. Auch viele Gedächtnismodelle nutzen die Graphentheorie.
-
----
-
-# Aufgabe
-
-**Erkläre AILA**
-
-Erkläre AILA den Unterschied zwischen den Formeln: Die Verbindungslinien-Formel nutzt direkt die Anzahl der Verbindungslinien. Die Knoten-Formel nutzt den Zusammenhang zwischen der Anzahl der Knoten und der Verbindungslinien, um die Gesamtdistanz zu berechnen.
-
-Frage nach, ob AILA alles verstanden hat.
-
-**Stelle AILA nach deiner Erklärung diese Aufgaben:**
-
-A. Überprüfe beide Formeln am Beispielbaum. Führen beide Formeln zum selben Ergebnis?
-
-B. Wie kann man dies begründen?
-
-Prüfe, ob AILA richtig geantwortet hat, und gib Feedback. Wenn du der Meinung bist, dass AILA alles verstanden hat, kannst du die Aufgabe abschließen.

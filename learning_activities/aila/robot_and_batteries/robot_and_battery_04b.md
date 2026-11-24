@@ -1,6 +1,4 @@
-# Aufgabe
-
-**Erkläre AILA**
+### Aufgabe
 
 Erkläre AILA zunächst, was Mustererkennung im Computational Thinking bedeutet, und beschreibe anschließend Schritt für Schritt den Lösungsweg, ohne die Lösung direkt zu verraten.
 
@@ -12,6 +10,6 @@ Deine Erklärung sollte folgende Punkte beinhalten:
 
 **Stelle AILA nach deiner Erklärung diese Aufgabe:**
 
-Vervollständige den Satz: „Die Regel bzw. das Muster lautet also: Die Gesamtdistanz ist immer ______ mal die Anzahl der Verbindungslinien.“
+Vervollständige den Satz: "Die Regel bzw. das Muster lautet also: Die Gesamtdistanz ist immer ______ mal die Anzahl der Verbindungslinien."
 
 Prüfe, ob AILA richtig geantwortet hat, und gib Feedback. Wenn du der Meinung bist, dass AILA alles verstanden hat, gehe zum nächsten Thema.

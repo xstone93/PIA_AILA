@@ -10,6 +10,7 @@ from activity import enter_task, start_conversation
 from chat_export import chat_markdown
 from content_registry import load_activity
 from task_preview import preview_activity
+from timing import show_message_timestamp
 import session_store
 
 
@@ -25,10 +26,64 @@ class MessageTimestampTest(unittest.TestCase):
             enter_task(state, task)
             original = deepcopy(state["messages"])
             start_conversation(state, task)
-        self.assertEqual(clock.call_count, 2)
+        self.assertEqual(clock.call_count, 1)
         self.assertEqual(state["messages"], original)
         self.assertEqual(original[0]["timestamp"], "2026-11-12T09:00:00+00:00")
-        self.assertEqual(original[1]["timestamp"], "2026-11-12T09:00:01+00:00")
+        self.assertEqual(original[1]["timestamp"], "2026-11-12T09:00:00+00:00")
+        self.assertEqual(original[0]["script_batch"], original[1]["script_batch"])
+
+    def test_only_same_script_batch_shares_a_timestamp_header(self):
+        first = {"role": "assistant", "timestamp": "same", "script_batch": 0}
+        self.assertFalse(show_message_timestamp(dict(first), first))
+        self.assertTrue(show_message_timestamp({**first, "script_batch": 3}, first))
+        self.assertTrue(show_message_timestamp({"role": "assistant", "timestamp": "same"}, first))
+        self.assertTrue(show_message_timestamp({**first, "role": "user"}, first))
+        self.assertTrue(show_message_timestamp(first))
+
+    def test_no_wait_batch_has_one_header_in_chat_export_and_after_resume(self):
+        activity = {"activity_id": "pia_cables_and_tester", "role": "PIA", "activity_name": "Test",
+                    "intro_sequence": "intro.md", "tasks": [{"task_title": "Task", "conversation": [
+                        {"message": "First block", "action": "no_wait"},
+                        {"message": "Second block", "type": "bold", "action": "no_wait"},
+                        {"message": "Current question"},
+                        {"message": "Later question"},
+                    ]}]}
+        stamp = "2026-11-12T09:00:00+00:00"
+        with tempfile.TemporaryDirectory() as temp, patch.object(
+            session_store, "DB_PATH", Path(temp) / "sessions.sqlite3"
+        ), patch("activity.utc_timestamp", return_value=stamp), patch("timing.utc_timestamp", return_value=stamp), patch(
+            "completion.step_complete", return_value=True
+        ), patch("guardrail.guarded_reply", return_value="Feedback"):
+            state = {"started": True, "task_index": 0, "messages": []}
+            enter_task(state, activity["tasks"][0])
+            store = session_store.SessionStore()
+            token = store.create(activity, state)
+            app_path = str(Path(__file__).resolve().parents[1] / "app.py")
+            app = AppTest.from_file(app_path)
+            app.query_params["session"] = token
+            app.run()
+            self.assertFalse(app.exception)
+            self.assertEqual(sum(len(m.caption) for m in app.chat_message), 1)
+            export = chat_markdown(activity, store.load(token)[1])
+            self.assertEqual(export.count("**PIA:**"), 1)
+            for block in ("First block", "Second block", "Current question"):
+                self.assertIn(block, export)
+            self.assertNotIn("Later question", export)
+            app.chat_input[0].set_value("Answer").run()
+            app.run()
+            self.assertFalse(app.exception)
+            # One batch + user + generated answer + new scripted question.
+            self.assertEqual(sum(len(m.caption) for m in app.chat_message), 4)
+            saved = store.load(token)[1]
+            export = chat_markdown(activity, saved)
+            self.assertEqual(export.count("**PIA:**"), 3)
+            self.assertEqual(export.count("**User:**"), 1)
+            resumed = AppTest.from_file(app_path)
+            resumed.query_params["session"] = token
+            resumed.run()
+            self.assertFalse(resumed.exception)
+            self.assertEqual(sum(len(m.caption) for m in resumed.chat_message), 4)
+            self.assertEqual(store.load(token)[1], saved)
 
     def test_user_and_agent_times_persist_and_match_chat_and_export(self):
         with tempfile.TemporaryDirectory() as temp, patch.object(
@@ -41,6 +96,8 @@ class MessageTimestampTest(unittest.TestCase):
             app.query_params["preview"] = "1"
             app.query_params["session"] = token
             app.run()
+            for _ in activity["tasks"][0].get("intro_sequence", [])[1:]:
+                app.button(key="intro_next").click().run()
             app.button(key="confirm_intro").click().run()
             times = ["2026-11-12T09:00:00+00:00", "2026-11-12T09:00:04+00:00"]
             with patch("timing.utc_timestamp", side_effect=times), patch(

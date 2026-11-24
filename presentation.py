@@ -12,16 +12,25 @@ def render_task_progress(activity, state):
     st.progress(completed / total, text=label)
 
 
-def page_style(intro=False):
+def page_style(intro=False, *, spacious_chat=False):
     dark = st.context.theme.type == "dark"
     background = st.get_option("theme.backgroundColor") or ("#0e1117" if dark else "#ffffff")
     tint = "background-color: color-mix(in srgb, currentColor 4%, transparent);" if intro else ""
+    paragraph_spacing = """
+    [data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] p {
+        margin-bottom: 1.25rem;
+    }
+    [data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] p:last-child {
+        margin-bottom: 0;
+    }
+    """ if spacious_chat else ""
     st.html(f"""
     <style>
     [data-testid="stMain"] {{ {tint} }}
     [data-testid="stMainBlockContainer"] {{
         padding-bottom: calc(17rem + env(safe-area-inset-bottom));
     }}
+    {paragraph_spacing}
     .st-key-chat_dock {{
         position: fixed;
         bottom: 0;
@@ -70,29 +79,40 @@ def control_sidebar(command):
             alignDock();
         }
         let done = false;
+        let clicked = false;
+        let desired;
         const apply = () => {
             if (done) return true;
             const sidebar = document.querySelector('[data-testid="stSidebar"]');
             if (!sidebar) return false;
             const expanded = sidebar.getAttribute('aria-expanded') === 'true';
             const command = 'SIDEBAR_COMMAND';
-            const shouldOpen = command === 'toggle' ? !expanded : command === 'open';
+            const shouldOpen = desired ??= (command === 'toggle' ? !expanded : command === 'open');
             if (expanded !== shouldOpen) {
+                if (clicked) return false;
                 const button = document.querySelector(shouldOpen
                     ? '[data-testid="stExpandSidebarButton"]'
                     : '[data-testid="stSidebarCollapseButton"] button');
                 if (!button) return false;
-                done = true;
+                clicked = true;
                 button.click();
+                // React updates asynchronously. Keep observing until the
+                // sidebar actually reaches the requested state.
+                return false;
             }
             done = true;
             return true;
         };
-        if (!apply()) {
+        requestAnimationFrame(() => {
+          if (!apply()) {
             const observer = new MutationObserver(() => { if (apply()) observer.disconnect(); });
-            observer.observe(document.body, {childList: true, subtree: true});
+            observer.observe(document.body, {childList: true, subtree: true,
+                attributes: true, attributeFilter: ['aria-expanded']});
+            // Cover a synchronous update between the first check and observation.
+            if (apply()) observer.disconnect();
             setTimeout(() => observer.disconnect(), 2000);
-        }
+          }
+        });
     })();
     </script>
     """.replace("SIDEBAR_COMMAND", command).replace("EVENT_ID", uuid4().hex),

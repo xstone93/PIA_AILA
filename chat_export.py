@@ -5,7 +5,7 @@ import re
 import streamlit as st
 
 from content_registry import IMAGE
-from timing import message_time
+from timing import message_time, show_message_timestamp
 
 
 def chat_markdown(activity, state, participant_code=None):
@@ -37,7 +37,10 @@ def chat_markdown(activity, state, participant_code=None):
             content = IMAGE.sub(lambda match: f"_Abbildung: {match.group(1) or 'Bild'}_", content)
             if message.get("type") == "bold":
                 content = f"**{content}**"
-        lines.extend([f"**{speaker}:** _{message_time(message.get('timestamp'))}_", "", content, ""])
+        previous = messages[index - 1] if index and index not in markers else None
+        if show_message_timestamp(message, previous):
+            lines.extend([f"**{speaker}:** _{message_time(message.get('timestamp'))}_", ""])
+        lines.extend([content, ""])
     return "\n".join(lines).rstrip() + "\n"
 
 

@@ -26,6 +26,13 @@ def message_time(timestamp):
     return instant.astimezone(ZoneInfo("Europe/Vienna")).strftime("%d.%m.%Y %H:%M:%S %Z")
 
 
+def show_message_timestamp(message, previous=None):
+    """A scripted no_wait batch has one header; independent replies keep theirs."""
+    batch = message.get("script_batch")
+    return (previous is None or batch is None or previous.get("script_batch") != batch
+            or previous["role"] != message["role"])
+
+
 @contextmanager
 def measure(operation):
     started = perf_counter()

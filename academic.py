@@ -4,7 +4,6 @@ import streamlit as st
 from timing import measure
 
 
-# MODEL = "academicai:gpt-5-mini"
 MODEL = "academicai:gemini-3.1-flash-lite"
 URL = "https://it-u-api.academic-ai.at/api/v1/llm/chat"
 
@@ -39,7 +38,8 @@ def reply(
     messages: list[dict[str, str]],
     system_prompt: str = "",
     model_id: str = MODEL,
-) -> str:    # AcademicAI accepts only user/assistant roles. Add instructions to a copy
+) -> str:
+    # AcademicAI accepts only user/assistant roles. Add instructions to a copy
     # of the latest user turn, keeping them out of the visible history.
     # Scripted no_wait entries are separate UI blocks within the same turn.
     # Send one message per speaker turn, without mutating the display history.

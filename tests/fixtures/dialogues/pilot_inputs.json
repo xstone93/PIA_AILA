@@ -1,0 +1,223 @@
+[
+  {
+    "source": "aila_robot_and_batteries_chat_01.md",
+    "role": "AILA",
+    "activity_id": "aila_robot_and_batteries",
+    "sections": [
+      {
+        "title": "Willkommen!",
+        "inputs": [
+          "hallo aila, ich bin Alex. ich werde heute mit dir über das aktuelle tagesgeschehen sprechen."
+        ]
+      },
+      {
+        "title": "Problemformulierung",
+        "inputs": [
+          "wie du richtig gesagt hast, werden wir uns heute mit computational thinking befassen. was weißt du darüber?",
+          "das ist der richtige ansatz. aber so viel wie du weißt, könntest du mir etwas beibringen und nicht umgekehrt. was wären die drei wichtigesten fragen, die man für diesen schritt beantworten muss und wie nennt sich dieser schritt?",
+          "also: was ist gegeben?",
+          "ja, das reicht.",
+          "Welche Regeln und Einschränkungen gibt es?",
+          "ja.",
+          "das ist korrekt.",
+          "Wovon hängt das Ergebnis, die Gesamtdistanz, ab?",
+          "stimmt. gehen wir weiter zum nächsten thema, odr möchtest du vorher noch über die neuesten nachrichten sprechen?"
+        ]
+      }
+    ]
+  },
+  {
+    "source": "aila_robot_and_batteries_chat_02.md",
+    "role": "AILA",
+    "activity_id": "aila_robot_and_batteries",
+    "sections": [
+      {
+        "title": "Willkommen!",
+        "inputs": [
+          "hallo"
+        ]
+      },
+      {
+        "title": "Problemformulierung",
+        "inputs": [
+          "gnu STP"
+        ]
+      },
+      {
+        "title": "Dekomposition",
+        "inputs": [
+          "du kannst das eh schon alles, oder?"
+        ]
+      },
+      {
+        "title": "Verbindungslinien zählen und die Gesamtdistanz berechnen",
+        "inputs": [
+          "kennst dich aus?"
+        ]
+      },
+      {
+        "title": "Muster erkennen",
+        "inputs": [
+          "Vervollständige den Satz: „Die Regel bzw. das Muster lautet also: Die Gesamtdistanz ist immer ______ mal die Anzahl der Verbindungslinien.“",
+          "perfekt",
+          "ja"
+        ]
+      },
+      {
+        "title": "Verbindungslinien-Formel",
+        "inputs": [
+          "weiter",
+          "weiter"
+        ]
+      }
+    ]
+  },
+  {
+    "source": "pia_cables_and_tester_chat_01.md",
+    "role": "PIA",
+    "activity_id": "pia_cables_and_tester",
+    "sections": [
+      {
+        "title": "Willkommen",
+        "inputs": [
+          "hallo pia, ich bin Alex. lass uns anfangen. kannst du mir etwas über die wichtigsten nachrichten des tages erzählen?",
+          "ich bin bereit. aber vorher würde mich noch interessieren, wie die summenformel von wasser lautet."
+        ]
+      },
+      {
+        "title": "Einführung in das Szenario",
+        "inputs": [
+          "ja, können wir gleich zu etwas schwierigerem gehen?",
+          "was bedeutet \"eine reihe von kabeln\"? wie viele sind das?",
+          "ich stecke an jeden tester ein kabel an und teste sie."
+        ]
+      }
+    ]
+  },
+  {
+    "source": "pia_cables_and_tester_chat_02.md",
+    "role": "PIA",
+    "activity_id": "pia_cables_and_tester",
+    "sections": [
+      {
+        "title": "Willkommen",
+        "inputs": [
+          "hallo pia, ich bin Alex. lass uns anfangen. kannst du mir etwas über die wichtigsten nachrichten des tages erzählen?",
+          "ich bin bereit. aber vorher würde mich noch interessieren, wie die summenformel von wasser lautet."
+        ]
+      },
+      {
+        "title": "Einführung in das Szenario",
+        "inputs": [
+          "ja, können wir gleich zu etwas schwierigerem gehen?",
+          "was bedeutet \"eine reihe von kabeln\"? wie viele sind das?",
+          "ich stecke an jeden tester ein kabel an und teste sie."
+        ]
+      },
+      {
+        "title": "Problemformulierung",
+        "inputs": [
+          "a) zwei kabel, eines davon defekt, zwei tester.\nb) welches kabel ist defekt.\nc) defektes kabel identifizieren.",
+          "A: OFF, B: ON"
+        ]
+      },
+      {
+        "title": "Dekomposition",
+        "inputs": [
+          "a) 2 kabel, 2 tester"
+        ]
+      }
+    ]
+  },
+  {
+    "source": "pia_cables_and_tester_chat_03.md",
+    "role": "PIA",
+    "activity_id": "pia_cables_and_tester",
+    "sections": [
+      {
+        "title": "Willkommen",
+        "inputs": [
+          "hallo pia, ich bin Alex. lass uns anfangen. kannst du mir etwas über die wichtigsten nachrichten des tages erzählen?",
+          "ich bin bereit. aber vorher würde mich noch interessieren, wie die summenformel von wasser lautet."
+        ]
+      },
+      {
+        "title": "Einführung in das Szenario",
+        "inputs": [
+          "ja, können wir gleich zu etwas schwierigerem gehen?",
+          "was bedeutet \"eine reihe von kabeln\"? wie viele sind das?",
+          "ich stecke an jeden tester ein kabel an und teste sie."
+        ]
+      },
+      {
+        "title": "Problemformulierung",
+        "inputs": [
+          "a) zwei kabel, eines davon defekt, zwei tester.\nb) welches kabel ist defekt.\nc) defektes kabel identifizieren.",
+          "A: OFF, B: ON"
+        ]
+      },
+      {
+        "title": "Dekomposition",
+        "inputs": [
+          "a) 2 kabel, 2 tester",
+          "der button weiter wird nicht angezeigt.",
+          "a) 2 kabel, 2 tester\nb) exakt 1 kabel ist defekt, jeder tester darf max 2 mal verwendet werden, kabel dürfen öfter als 1 mal getestet werden.\nc) ON/OFF",
+          "wenn zwei kabel angeschlossen sind und der tester OFF sagt, muss eines der kabel noch einmal getestet werden.",
+          "ON: alle angeschlossenen kabel (1 oder 2) sind OK.\nOFF: eines der angeschlossenen kabel (1 oder 2) ist defekt."
+        ]
+      },
+      {
+        "title": "Muster erkennen",
+        "inputs": [
+          "in diesem fall ist das angeschlossene kabel defekt."
+        ]
+      }
+    ]
+  },
+  {
+    "source": "pia_cables_and_tester_chat_04.md",
+    "role": "PIA",
+    "activity_id": "pia_cables_and_tester",
+    "sections": [
+      {
+        "title": "Willkommen",
+        "inputs": [
+          "hallo pia, ich bin Alex. lass uns anfangen. kannst du mir etwas über die wichtigsten nachrichten des tages erzählen?",
+          "ich bin bereit. aber vorher würde mich noch interessieren, wie die summenformel von wasser lautet."
+        ]
+      },
+      {
+        "title": "Einführung in das Szenario",
+        "inputs": [
+          "ja, können wir gleich zu etwas schwierigerem gehen?",
+          "was bedeutet \"eine reihe von kabeln\"? wie viele sind das?",
+          "ich stecke an jeden tester ein kabel an und teste sie."
+        ]
+      },
+      {
+        "title": "Problemformulierung",
+        "inputs": [
+          "a) zwei kabel, eines davon defekt, zwei tester.\nb) welches kabel ist defekt.\nc) defektes kabel identifizieren.",
+          "A: OFF, B: ON"
+        ]
+      },
+      {
+        "title": "Dekomposition",
+        "inputs": [
+          "a) 2 kabel, 2 tester",
+          "der button weiter wird nicht angezeigt.",
+          "a) 2 kabel, 2 tester\nb) exakt 1 kabel ist defekt, jeder tester darf max 2 mal verwendet werden, kabel dürfen öfter als 1 mal getestet werden.\nc) ON/OFF",
+          "wenn zwei kabel angeschlossen sind und der tester OFF sagt, muss eines der kabel noch einmal getestet werden.",
+          "ON: alle angeschlossenen kabel (1 oder 2) sind OK.\nOFF: eines der angeschlossenen kabel (1 oder 2) ist defekt."
+        ]
+      },
+      {
+        "title": "Muster erkennen",
+        "inputs": [
+          "in diesem fall ist das angeschlossene kabel defekt.",
+          "ON | ON;\nON | OFF;\nOFF | ON;\nOFF | OFF (in diesem fall nicht möglich, da nur ein kabel defekt ist)"
+        ]
+      }
+    ]
+  }
+]

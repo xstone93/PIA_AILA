@@ -27,7 +27,7 @@ class DiagnosticsTest(unittest.TestCase):
             ]), self.assertLogs("minimal_chat.guardrail", level="INFO") as logs:
                 self.assertEqual(guarded_reply([], "private task context", role="PIA"), "Danke!")
             with patch("completion.reply", return_value="invalid"):
-                self.assertFalse(step_complete([], "Danke!", "private task context", "PIA"))
+                self.assertFalse(step_complete([], "private task context", "PIA"))
             entries = [json.loads(line) for line in diagnostics.DIAGNOSTICS_PATH.read_text(encoding="utf-8").splitlines()]
             self.assertEqual({entry["reference"] for entry in entries}, {context["reference"]})
             self.assertEqual([entry["event"] for entry in entries], [
@@ -64,10 +64,12 @@ class DiagnosticsTest(unittest.TestCase):
     def test_unfinished_step_reason_is_available_only_in_diagnostics(self):
         with patch("completion.reply", return_value=json.dumps({
             "step_complete": False, "reason": "private: tutor confirmation missing",
+            "criteria": [{"id": "answer", "requirement": "Answer current question",
+                          "status": "missing", "evidence": []}],
         })), patch("completion.record") as record, self.assertLogs(
             "minimal_chat.completion", level="INFO"
         ) as logs, diagnostics.diagnostic_scope() as context:
-            self.assertFalse(step_complete([], "draft", "current requirements", "PIA"))
+            self.assertFalse(step_complete([], "current requirements", "PIA"))
             self.assertEqual(record.call_args.kwargs["reason"], "private: tutor confirmation missing")
             self.assertNotIn("completion_error", context)
             self.assertNotIn("private", "\n".join(logs.output))

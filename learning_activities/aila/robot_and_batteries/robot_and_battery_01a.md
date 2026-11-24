@@ -1,17 +1,21 @@
-# Information
+### Information
 **Bereite dich vor, damit du später AILA alles gut erklären kannst**
 
-Wir bleiben bei dem Einstiegsszenario „Robo und Batterien“ und nutzen die Abbildung mit zwei Batterien. Im folgenden Szenario sollst du herausfinden, welche Gesamtdistanz Robo zurücklegen muss, um alle Batterien einzusammeln und wieder zu seinem Startpunkt zurückzukehren. Dafür wirst du eine Formel entwickeln.
+Wir bleiben bei dem Einstiegsszenario "Robo und Batterien" und nutzen die Abbildung mit zwei Batterien. Im folgenden Szenario sollst du herausfinden, welche Gesamtdistanz Robo zurücklegen muss, um alle Batterien einzusammeln und wieder zu seinem Startpunkt zurückzukehren. Dafür wirst du eine Formel entwickeln.
 
 ![Bild](./figures/intro_robot_small.png){width=320}
 
 Wenn wir ein Problem wie dieses lösen möchten, besteht der erste Schritt im Computational Thinking darin, das Problem genau zu verstehen. Dazu müssen wir herausfinden,
 
 A. welche Informationen gegeben sind,
+
 B. was unbekannt ist,
+
 C. worin das Ziel besteht.
 
 Diese Schritte nennt man **Problemformulierung**.
+
+---
 
 Überlege dir zunächst, wie du die Fragen **A**, **B** und **C** beantworten würdest. Klicke auf die Frage, um die Lösung zu erhalten.
 

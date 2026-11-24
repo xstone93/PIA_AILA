@@ -1,6 +1,6 @@
 **Bereite dich vor, damit du später AILA alles gut erklären kannst**
 
-# Information
+### Information
 
 Nachdem wir das Problem verstanden haben, ist der nächste Schritt, dieses in kleinere, überschaubare Teile zu zerlegen. Diese Fähigkeit wird im Computational Thinking als Dekomposition bezeichnet. Wir benötigen diese Fähigkeit fast immer, wenn wir ein Problem bearbeiten. 
 Dazu ein Beispiel: Wenn dein Fahrrad nicht funktioniert, untersuchst du nicht das ganze Fahrrad auf einmal. Stattdessen überprüfst du einzelne Bereiche wie die Bremsen, die Reifen, die Kette und die Schaltung. Genauso zerlegen wir auch das „Roboter und Batterien“-Problem in kleinere Teilprobleme, um es Schritt für Schritt lösen zu können.
@@ -13,6 +13,8 @@ Wir können das Problem zerlegen, indem wir zunächst verschiedene Bestandteile 
 A. welche Ressourcen bzw. Elemente das Problem enthält,
 B. welche Regeln und Bedingungen gelten,
 C. wovon das Ergebnis, die Gesamtdistanz, abhängt.
+
+---
 
 Überlege dir zunächst, wie du A, B und C beantworten würdest. Unten findest du dann die Lösungen.
 

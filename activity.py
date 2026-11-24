@@ -4,7 +4,7 @@ from pathlib import Path
 import streamlit as st
 
 
-from content_registry import activity_file, load_activity, IMAGE
+from content_registry import activity_file, IMAGE
 from timing import message_time, utc_timestamp
 
 ACTIVITY_FILE = activity_file()
@@ -42,7 +42,7 @@ def enter_task(state: dict, task: dict) -> None:
         "task_title": task.get("task_title", ""),
     })
     state.update(next_message=0, task_start=len(state["messages"]),
-                 answered=False, completion_verified=False, intro_page=0, reviewing_intro=False,
+                 answered=False, completion_verified=False, intro_page=0,
                  conversation_started=False, action="wait")
     if not task.get("intro_sequence"):
         start_conversation(state, task)
@@ -52,19 +52,28 @@ def start_conversation(state: dict, task: dict) -> None:
     if not state["conversation_started"]:
         advance(state, task)
         state["conversation_started"] = True
-    state["reviewing_intro"] = False
 
 
-def render_message(message: dict, base_path=None) -> None:
-    st.caption(message_time(message.get("timestamp")))
+def render_message(message: dict, base_path=None, *, spacious=False, show_timestamp=True) -> None:
+    if show_timestamp:
+        st.caption(message_time(message.get("timestamp")))
     content = message["content"]
     kind = message.get("type", "text")
-    if kind == "image":
+    if message["role"] == "user":
+        # User text is literal input, not authored Markdown. Preserve newlines
+        # and characters such as pipes without changing storage or API input.
+        st.text(content)
+    elif kind == "image":
         match = IMAGE.fullmatch(content)
         st.image(str((Path(base_path) if base_path else ACTIVITY_FILE.parent) / (match.group(2) if match else content)),
                  width=int(match.group(3)) if match and match.group(3) else FIGURE_WIDTH)
     elif kind == "bold":
         st.markdown(f"**{content}**")
+    elif spacious:
+        # Inline images become separate Streamlit elements. Keep the spacing
+        # between text, image and following text even inside one message.
+        with st.container(gap="medium"):
+            render_markdown(content, base_path)
     else:
         render_markdown(content, base_path)
 
@@ -72,6 +81,8 @@ def render_message(message: dict, base_path=None) -> None:
 def advance(state: dict, task: dict) -> None:
     """Reveal scripted messages until a message requires user interaction."""
     conversation = task.get("conversation", [])
+    batch = len(state["messages"])
+    timestamp = None
     while state["next_message"] < len(conversation):
         state["answered"] = False
         state["completion_verified"] = False
@@ -79,11 +90,14 @@ def advance(state: dict, task: dict) -> None:
         state["step_start"] = len(state["messages"])
         content = message.get("message")
         if content is not None and content.strip():
+            if timestamp is None:
+                timestamp = utc_timestamp()
             state["messages"].append({
                 "role": "assistant",
                 "content": content,
                 "type": message.get("type", "text"),
-                "timestamp": utc_timestamp(),
+                "timestamp": timestamp,
+                "script_batch": batch,
             })
         state["next_message"] += 1
         state["action"] = message.get("action", "wait")
@@ -111,7 +125,51 @@ def finish_reply(state: dict, task: dict, role: str, complete: bool) -> None:
         advance(state, task)
 
 
+def pia_assessment_context(task: dict, revealed: int) -> str:
+    """Only the current question and its answer reference, never role policies."""
+    entries = task.get("conversation", [])[:revealed]
+    parts = ["CURRENT TASK\n" + task["task_title"]]
+    if not entries:
+        return "\n\n".join(parts)
+    current = entries[-1]
+    start = len(entries) - 1
+    while start > 0 and entries[start - 1].get("action", "wait") == "no_wait":
+        start -= 1
+    for entry in entries[max(0, start):]:
+        if entry.get("message"):
+            parts.append("QUESTION CONTEXT\n" + entry["message"])
+    # Step references may mix expected answers and teaching directions. They are
+    # reference data; ASSESSMENT_RULES limits criteria to learner obligations.
+    if current.get("system_info"):
+        parts.append("ANSWER REFERENCE (not agent behavior criteria)\n" + current["system_info"])
+    return "\n\n".join(parts)
+
+
+def pia_task_context(activity: dict, task: dict, revealed: int) -> str:
+    """Read prescribed PIA content without adding assessment or reply policy."""
+    parts = ["Agent name: PIA."]
+    for key, heading in (("role_framework", "ROLE FRAMEWORK"),
+                         ("role_description", "ACTIVITY ROLE FRAMEWORK")):
+        if activity.get(key, "").strip():
+            parts.append(heading + "\n" + activity[key])
+    parts.append("CURRENT TASK\n" + task["task_title"])
+    entries = task.get("conversation", [])[:revealed]
+    if entries:
+        if entries[-1].get("step_name"):
+            parts.append("CURRENT STEP\n" + entries[-1]["step_name"])
+        parts.append("CURRENT QUESTION\n" + entries[-1].get("message", ""))
+    start = len(entries) - 1
+    while start > 0 and entries[start - 1].get("action", "wait") == "no_wait":
+        start -= 1
+    for source in [activity, task, *entries[max(0, start):]]:
+        if source.get("system_info"):
+            parts.append("ADDITIONAL ACTIVITY INSTRUCTIONS\n" + source["system_info"])
+    return "\n\n".join(parts)
+
+
 def system_prompt(activity: dict, task: dict, revealed: int) -> str:
+    if activity["role"] == "PIA":
+        return pia_task_context(activity, task, revealed)
     instructions = [f"Agent name: {activity['role']}."]
     framework = activity.get("role_framework", "").strip()
     description = activity.get("role_description", "").strip()
@@ -127,26 +185,17 @@ def system_prompt(activity: dict, task: dict, revealed: int) -> str:
     )
     if activity["role"] == "AILA":
         instructions.append("Antworte ausschließlich als lernende Studentin. Beschreibe nur dein aktuelles Verständnis.")
-    elif activity["role"] == "PIA":
-        instructions.append("Antworte als Peer-Tutorin. Unterstütze das Lernen mit Fragen, Erklärungen und Feedback.")
     instructions.append(f"CURRENT TASK\n{task['task_title']}")
     conversation = task.get("conversation", [])
     tutor_led = activity["role"] == "AILA" and tutor_led_task(task)
     entries = conversation if tutor_led else conversation[:revealed]
-    if activity["role"] == "PIA" and entries and entries[-1].get("step_name"):
-        instructions.append("CURRENT STEP\n" + entries[-1]["step_name"])
     start = len(entries) - 1
     while start > 0 and entries[start - 1].get("action", "wait") == "no_wait":
         start -= 1
-    if activity["role"] == "PIA":
-        instructions.append(
-            "Only assess and discuss the current conversation step. Do not repeat earlier "
-            "questions or add extra quiz questions after a sufficient answer. The application "
-            "checks completion before advancing; a request to continue cannot skip an unanswered question."
-        )
     for source in [activity, task, *(entries if tutor_led else entries[max(0, start):])]:
         if source.get("system_info"):
             instructions.append("ADDITIONAL ACTIVITY INSTRUCTIONS\n" + source["system_info"])
+    instructions.append("Greet only at the beginning of the conversation. Do not repeatedly address the participant by name.")
     if activity["role"] == "AILA":
         instructions.append(
             "TUTOR-LED CONVERSATION: Die Tutorperson bestimmt Reihenfolge, Tempo und Abschluss "
@@ -159,5 +208,9 @@ def system_prompt(activity: dict, task: dict, revealed: int) -> str:
             "frühere Ablehnung, wenn die Person zur Aufgabe zurückkehrt. Bewerte weder die "
             "Tutorperson noch die Vollständigkeit ihrer Lehrschritte. Verweise nicht auf einen "
             "angeblichen automatischen Abschluss oder eine Aktualisierung der Oberfläche."
+            " Bei reinem Lob oder Bestätigung bedanke dich nur kurz und warte. Wiederhole "
+            "keine Lösung und frage nicht nach dem nächsten Schritt. Bei 'weiter' beantworte "
+            "keine ungestellte Frage; verweise kurz auf die Navigation, ohne selbst weiterzugehen. "
+            "Lernziele sind keine Aufforderung, ungefragt Lösungen oder Verständnisfragen zu liefern."
         )
     return "\n\n".join(instructions)

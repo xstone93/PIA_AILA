@@ -1,4 +1,4 @@
-📝 **Aufgabe**
+### Aufgabe
 
 AILA soll herausfinden, wie viele Verbindungslinien der Beispielbaum hat und wie oft Robo eine einzelne Verbindungslinie durchläuft, wenn er alle Batterien einsammelt und zum Startpunkt zurückkehrt. Beschreibe AILA, wie sie zur Lösung kommt, aber sage ihr die Lösung noch nicht. 
 
